@@ -1,0 +1,10 @@
+name: IridiumTowns
+version: ${version}
+description: Factions Redefined
+main: com.iridium.iridiumtowns.IridiumTowns
+api-version: '1.13'
+author: Peaches_MLG
+commands:
+  iridiumtowns:
+    aliases: [ "town", "t" ]
+    description: Main plugin command
