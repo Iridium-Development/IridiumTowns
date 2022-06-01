@@ -1,16 +1,15 @@
 package com.iridium.iridiumtowns;
 
-import com.iridium.iridiumcore.utils.Placeholder;
 import com.iridium.iridiumteams.IridiumTeams;
-import com.iridium.iridiumteams.PlaceholderBuilder;
-import com.iridium.iridiumteams.configs.*;
 import com.iridium.iridiumteams.managers.IridiumUserManager;
 import com.iridium.iridiumteams.managers.TeamManager;
+import com.iridium.iridiumtowns.configs.*;
 import com.iridium.iridiumtowns.database.Town;
 import com.iridium.iridiumtowns.database.User;
 import com.iridium.iridiumtowns.managers.CommandManager;
 import com.iridium.iridiumtowns.managers.TownManager;
 import com.iridium.iridiumtowns.managers.UserManager;
+import com.iridium.iridiumtowns.placeholders.TownPlaceholderBuilder;
 import com.iridium.iridiumtowns.placeholders.UserPlaceholderBuilder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,10 +17,6 @@ import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPluginLoader;
 
 import java.io.File;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
 
 @Getter
 @NoArgsConstructor
@@ -48,22 +43,12 @@ public class IridiumTowns extends IridiumTeams<Town, User> {
     }
 
     @Override
-    public PlaceholderBuilder<Town> getTeamsPlaceholderBuilder() {
-        return new PlaceholderBuilder<Town>() {
-            @Override
-            public List<Placeholder> getPlaceholders(Town town) {
-                return Collections.emptyList();
-            }
-
-            @Override
-            public List<Placeholder> getPlaceholders(Optional<Town> optional) {
-                return Collections.emptyList();
-            }
-        };
+    public TownPlaceholderBuilder getTeamsPlaceholderBuilder() {
+        return new TownPlaceholderBuilder();
     }
 
     @Override
-    public PlaceholderBuilder<User> getUserPlaceholderBuilder() {
+    public UserPlaceholderBuilder getUserPlaceholderBuilder() {
         return new UserPlaceholderBuilder();
     }
 
@@ -103,8 +88,8 @@ public class IridiumTowns extends IridiumTeams<Town, User> {
     }
 
     @Override
-    public Commands<Town, User> getCommands() {
-        return new Commands<>();
+    public Commands getCommands() {
+        return new Commands();
     }
 
     public static IridiumTowns getInstance() {
