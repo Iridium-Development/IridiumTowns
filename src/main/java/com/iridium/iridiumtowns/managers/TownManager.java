@@ -8,10 +8,12 @@ import com.iridium.iridiumteams.database.TeamPermission;
 import com.iridium.iridiumteams.managers.TeamManager;
 import com.iridium.iridiumtowns.IridiumTowns;
 import com.iridium.iridiumtowns.database.Town;
+import com.iridium.iridiumtowns.database.TownRegion;
 import com.iridium.iridiumtowns.database.User;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -21,30 +23,32 @@ import java.util.stream.Collectors;
 
 public class TownManager extends TeamManager<Town, User> {
 
-    public static List<Town> teams;
     public static List<TeamPermission> teamPermissions;
     public static List<TeamInvite> teamInvites;
-    public static Map<Location, Town> teamClaims;
+    public static List<TownRegion> townRegions;
 
     public TownManager() {
-        teams = new ArrayList<>();
         teamPermissions = new ArrayList<>();
         teamInvites = new ArrayList<>();
+        townRegions = new ArrayList<>();
     }
 
     @Override
     public Optional<Town> getTeamViaID(int id) {
-        return teams.stream().filter(Town -> Town.getId() == id).findFirst();
+        return IridiumTowns.getInstance().getDatabaseManager().getTownTableManager().getTown(id);
     }
 
     @Override
     public Optional<Town> getTeamViaName(String name) {
-        return teams.stream().filter(Town -> Town.getName().equalsIgnoreCase(name)).findFirst();
+        return IridiumTowns.getInstance().getDatabaseManager().getTownTableManager().getTown(name);
     }
 
     @Override
     public Optional<Town> getTeamViaLocation(Location location) {
-        return Optional.empty();
+        return townRegions.stream()
+                .filter(townRegion -> townRegion.isInRegion(location))
+                .map(TownRegion::getTown)
+                .findFirst();
     }
 
     @Override
@@ -60,22 +64,35 @@ public class TownManager extends TeamManager<Town, User> {
 
     @Override
     public List<User> getTeamMembers(Town team) {
-        return UserManager.users.stream().filter(user -> user.getTeamID() == team.getId()).collect(Collectors.toList());
+        return IridiumTowns.getInstance().getDatabaseManager().getUserTableManager().getEntries().stream()
+                .filter(user -> user.getTeamID() == team.getId())
+                .collect(Collectors.toList());
     }
 
     @Override
     public CompletableFuture<Town> createTeam(@NotNull Player owner, @NotNull String name) {
-        Town Town = new Town(name);
-        User user = IridiumTowns.getInstance().getUserManager().getUser(owner);
+        return CompletableFuture.supplyAsync(() -> {
+            User user = IridiumTowns.getInstance().getUserManager().getUser(owner);
+            Town town = new Town(name);
 
-        user.setTeam(Town);
-        teams.add(Town);
-        return CompletableFuture.completedFuture(Town);
+            IridiumTowns.getInstance().getDatabaseManager().registerTown(town).join();
+
+            user.setTeam(town);
+            user.setUserRank(Rank.OWNER.getId());
+
+            World world = Bukkit.getServer().getWorld("world");
+            townRegions.add(new TownRegion(town, new Location(world, -10, 0, -10), new Location(world, 10, 0, 10)));
+
+            return town;
+        }).exceptionally(throwable -> {
+            throwable.printStackTrace();
+            return null;
+        });
     }
 
     @Override
-    public void deleteTeam(Team team, User user) {
-        teams.remove(team);
+    public void deleteTeam(Town town, User user) {
+        IridiumTowns.getInstance().getDatabaseManager().getTownTableManager().delete(town);
     }
 
     @Override

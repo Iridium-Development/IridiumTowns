@@ -2,6 +2,7 @@ package com.iridium.iridiumtowns.placeholders;
 
 import com.iridium.iridiumcore.utils.Placeholder;
 import com.iridium.iridiumteams.PlaceholderBuilder;
+import com.iridium.iridiumteams.UserRank;
 import com.iridium.iridiumtowns.IridiumTowns;
 import com.iridium.iridiumtowns.database.User;
 
@@ -14,7 +15,7 @@ public class UserPlaceholderBuilder implements PlaceholderBuilder<User> {
     @Override
     public List<Placeholder> getPlaceholders(User user) {
         return Arrays.asList(
-                new Placeholder("player_rank", IridiumTowns.getInstance().getUserRanks().get(user.getUserRank()).name),
+                new Placeholder("player_rank", IridiumTowns.getInstance().getUserRanks().getOrDefault(user.getUserRank(), new UserRank("N/A", null)).name),
                 new Placeholder("player_name", user.getName()),
                 new Placeholder("player_join", user.getJoinTime().format(DateTimeFormatter.ofPattern(IridiumTowns.getInstance().getConfiguration().dateTimeFormat)))
         );

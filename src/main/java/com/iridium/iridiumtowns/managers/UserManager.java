@@ -2,6 +2,7 @@
 package com.iridium.iridiumtowns.managers;
 
 import com.iridium.iridiumteams.managers.IridiumUserManager;
+import com.iridium.iridiumtowns.IridiumTowns;
 import com.iridium.iridiumtowns.database.Town;
 import com.iridium.iridiumtowns.database.User;
 import org.bukkit.OfflinePlayer;
@@ -13,11 +14,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 public class UserManager implements IridiumUserManager<Town, User> {
-    public static List<User> users;
-
-    public UserManager() {
-        users = new ArrayList<>();
-    }
 
     @Override
     public @NotNull User getUser(@NotNull OfflinePlayer offlinePlayer) {
@@ -27,12 +23,12 @@ public class UserManager implements IridiumUserManager<Town, User> {
         } else {
             Optional<String> name = Optional.ofNullable(offlinePlayer.getName());
             User user = new User(offlinePlayer.getUniqueId(), name.orElse(""));
-            users.add(user);
+            IridiumTowns.getInstance().getDatabaseManager().getUserTableManager().addEntry(user);
             return user;
         }
     }
 
     public Optional<User> getUserByUUID(@NotNull UUID uuid) {
-        return users.stream().filter(user -> user.getUuid() == uuid).findFirst();
+        return IridiumTowns.getInstance().getDatabaseManager().getUserTableManager().getUser(uuid);
     }
 }

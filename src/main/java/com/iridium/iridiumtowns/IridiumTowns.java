@@ -7,16 +7,19 @@ import com.iridium.iridiumtowns.configs.*;
 import com.iridium.iridiumtowns.database.Town;
 import com.iridium.iridiumtowns.database.User;
 import com.iridium.iridiumtowns.managers.CommandManager;
+import com.iridium.iridiumtowns.managers.DatabaseManager;
 import com.iridium.iridiumtowns.managers.TownManager;
 import com.iridium.iridiumtowns.managers.UserManager;
 import com.iridium.iridiumtowns.placeholders.TownPlaceholderBuilder;
 import com.iridium.iridiumtowns.placeholders.UserPlaceholderBuilder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPluginLoader;
 
 import java.io.File;
+import java.sql.SQLException;
 
 @Getter
 @NoArgsConstructor
@@ -27,6 +30,7 @@ public class IridiumTowns extends IridiumTeams<Town, User> {
     private TownManager townManager;
     private UserManager userManager;
     private CommandManager commandManager;
+    private DatabaseManager databaseManager;
 
     public IridiumTowns(JavaPluginLoader loader, PluginDescriptionFile description, File dataFolder, File file) {
         super(loader, description, dataFolder, file);
@@ -38,6 +42,15 @@ public class IridiumTowns extends IridiumTeams<Town, User> {
 
         this.townManager = new TownManager();
         this.userManager = new UserManager();
+        this.databaseManager = new DatabaseManager();
+        try {
+            databaseManager.init();
+        } catch (SQLException exception) {
+            // We don't want the plugin to start if the connection fails
+            exception.printStackTrace();
+            Bukkit.getPluginManager().disablePlugin(this);
+            return;
+        }
         super.onEnable();
         this.commandManager = new CommandManager("iridiumtowns");
     }
@@ -87,9 +100,23 @@ public class IridiumTowns extends IridiumTeams<Town, User> {
         return new Inventories();
     }
 
+    public DatabaseManager getDatabaseManager() {
+        return databaseManager;
+    }
+
+    public SQL getSQL() {
+        return new SQL();
+    }
+
     @Override
     public Commands getCommands() {
         return new Commands();
+    }
+
+    @Override
+    public void saveData() {
+        getDatabaseManager().getUserTableManager().save();
+        getDatabaseManager().getTownTableManager().save();
     }
 
     public static IridiumTowns getInstance() {
