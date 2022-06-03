@@ -1,5 +1,6 @@
 package com.iridium.iridiumtowns.database;
 
+import com.iridium.iridiumteams.database.TeamData;
 import com.iridium.iridiumtowns.IridiumTowns;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
@@ -9,17 +10,17 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.bukkit.Location;
 
+import static java.lang.Math.max;
+import static java.lang.Math.min;
+
 @Getter
 @Setter
 @NoArgsConstructor
 @DatabaseTable(tableName = "town_regions")
-public class TownRegion {
+public class TownRegion extends TeamData<Town> {
 
     @DatabaseField(columnName = "id", canBeNull = false, generatedId = true)
     private int id;
-    @Setter(AccessLevel.PRIVATE)
-    @DatabaseField(columnName = "team_id", canBeNull = false)
-    private Town town;
 
     @DatabaseField(columnName = "position_1", canBeNull = false)
     private Location position1;
@@ -28,9 +29,19 @@ public class TownRegion {
     private Location position2;
 
     public TownRegion(Town town, Location position1, Location position2) {
-        this.town = town;
-        this.position1 = position1;
-        this.position2 = position2;
+        super(town);
+        this.position1 = new Location(
+                position1.getWorld(),
+                min(position1.getBlockX(), position2.getBlockX()),
+                min(position1.getBlockY(), position2.getBlockY()),
+                min(position1.getBlockZ(), position2.getBlockZ())
+        );
+        this.position2 = new Location(
+                position1.getWorld(),
+                max(position1.getBlockX(), position2.getBlockX()),
+                max(position1.getBlockY(), position2.getBlockY()),
+                max(position1.getBlockZ(), position2.getBlockZ())
+        );
     }
 
     public boolean isInRegion(Location location) {

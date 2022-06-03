@@ -1,12 +1,16 @@
 package com.iridium.iridiumtowns.managers;
 
+import com.iridium.iridiumteams.database.TeamInvite;
+import com.iridium.iridiumteams.database.TeamPermission;
 import com.iridium.iridiumteams.database.types.LocalDateTimeType;
 import com.iridium.iridiumtowns.IridiumTowns;
 import com.iridium.iridiumtowns.configs.SQL;
 import com.iridium.iridiumtowns.database.Town;
+import com.iridium.iridiumtowns.database.TownRegion;
 import com.iridium.iridiumtowns.database.types.InventoryType;
 import com.iridium.iridiumtowns.database.types.LocationType;
 import com.iridium.iridiumtowns.database.types.XMaterialType;
+import com.iridium.iridiumtowns.managers.tablemanagers.ForeignTownTableManager;
 import com.iridium.iridiumtowns.managers.tablemanagers.TownTableManager;
 import com.iridium.iridiumtowns.managers.tablemanagers.UserTableManager;
 import com.j256.ormlite.field.DataPersisterManager;
@@ -21,6 +25,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.sql.SQLException;
+import java.util.Comparator;
 import java.util.concurrent.CompletableFuture;
 
 @Getter
@@ -31,6 +36,9 @@ public class DatabaseManager {
 
     private UserTableManager userTableManager;
     private TownTableManager townTableManager;
+    private ForeignTownTableManager<TeamInvite<Town>, Integer> invitesTableManager;
+    private ForeignTownTableManager<TeamPermission<Town>, Integer> permissionsTableManager;
+    private ForeignTownTableManager<TownRegion, Integer> regionsTableManager;
 
     public void init() throws SQLException {
         LoggerFactory.setLogBackendFactory(new NullLogBackend.NullLogBackendFactory());
@@ -52,6 +60,9 @@ public class DatabaseManager {
 
         this.userTableManager = new UserTableManager(connectionSource);
         this.townTableManager = new TownTableManager(connectionSource);
+        this.invitesTableManager = new ForeignTownTableManager<>(connectionSource, (Class<TeamInvite<Town>>) (Class<?>) TeamInvite.class, Comparator.comparing((TeamInvite<Town> t) -> t.getTeamID()).thenComparing(TeamInvite::getUser));
+        this.permissionsTableManager = new ForeignTownTableManager<>(connectionSource, (Class<TeamPermission<Town>>) (Class<?>) TeamPermission.class, Comparator.comparing((TeamPermission<Town> t) -> t.getTeamID()).thenComparing(TeamPermission::getPermission));
+        this.regionsTableManager = new ForeignTownTableManager<>(connectionSource, TownRegion.class, Comparator.comparing(TownRegion::getTeamID));
     }
 
     /**

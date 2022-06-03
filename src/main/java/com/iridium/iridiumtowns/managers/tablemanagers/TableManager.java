@@ -18,7 +18,6 @@ import java.util.concurrent.CompletableFuture;
 public class TableManager<T, S> {
     private final SortedList<T> entries;
     private final Dao<T, S> dao;
-    private final Class<T> clazz;
 
     private final ConnectionSource connectionSource;
 
@@ -29,7 +28,6 @@ public class TableManager<T, S> {
         this.dao = DaoManager.createDao(connectionSource, clazz);
         this.dao.setAutoCommit(getDatabaseConnection(), false);
         this.entries.addAll(dao.queryForAll());
-        this.clazz = clazz;
     }
 
     public void save() {

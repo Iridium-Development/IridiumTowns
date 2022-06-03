@@ -6,6 +6,8 @@ import com.iridium.iridiumteams.managers.TeamManager;
 import com.iridium.iridiumtowns.configs.*;
 import com.iridium.iridiumtowns.database.Town;
 import com.iridium.iridiumtowns.database.User;
+import com.iridium.iridiumtowns.listeners.PlayerInteractListener;
+import com.iridium.iridiumtowns.listeners.PlayerMoveListener;
 import com.iridium.iridiumtowns.managers.CommandManager;
 import com.iridium.iridiumtowns.managers.DatabaseManager;
 import com.iridium.iridiumtowns.managers.TownManager;
@@ -117,6 +119,16 @@ public class IridiumTowns extends IridiumTeams<Town, User> {
     public void saveData() {
         getDatabaseManager().getUserTableManager().save();
         getDatabaseManager().getTownTableManager().save();
+        getDatabaseManager().getInvitesTableManager().save();
+        getDatabaseManager().getPermissionsTableManager().save();
+        getDatabaseManager().getRegionsTableManager().save();
+    }
+
+    @Override
+    public void registerListeners() {
+        super.registerListeners();
+        Bukkit.getPluginManager().registerEvents(new PlayerMoveListener(), this);
+        Bukkit.getPluginManager().registerEvents(new PlayerInteractListener(), this);
     }
 
     public static IridiumTowns getInstance() {
