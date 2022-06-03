@@ -6,4 +6,8 @@ import com.iridium.iridiumtowns.database.User;
 
 public class Commands extends com.iridium.iridiumteams.configs.Commands<Town, User> {
     public ClaimCommand claimCommand = new ClaimCommand();
+
+    public Commands() {
+        super("iridiumtowns.", "Town", "t");
+    }
 }

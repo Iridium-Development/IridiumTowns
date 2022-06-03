@@ -7,6 +7,7 @@ import java.util.Arrays;
 
 public class Configuration extends com.iridium.iridiumteams.configs.Configuration {
     public String dateTimeFormat = "EEEE, MMMM dd HH:mm:ss";
+    public String defaultDescription = "Default town description :c";
     public boolean ignoreYSpace = true;
     public Item claimWand = new Item(XMaterial.GOLDEN_AXE, 1, "&9&lClaim Wand", Arrays.asList(
             "&7Position 1: %position1%",
