@@ -43,7 +43,7 @@ public class DatabaseManager {
     public void init() throws SQLException {
         LoggerFactory.setLogBackendFactory(new NullLogBackend.NullLogBackendFactory());
 
-        SQL sqlConfig = IridiumTowns.getInstance().getSQL();
+        SQL sqlConfig = IridiumTowns.getInstance().getSql();
         String databaseURL = getDatabaseURL(sqlConfig);
 
         DataPersisterManager.registerDataPersisters(XMaterialType.getSingleton());

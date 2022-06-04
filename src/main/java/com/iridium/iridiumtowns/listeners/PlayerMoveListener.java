@@ -20,8 +20,8 @@ public class PlayerMoveListener implements Listener {
         if (event.getTo() == null) return;
         if (event.getFrom().getBlock().getLocation().equals(event.getTo().getBlock().getLocation())) return;
 
-        Optional<Town> fromTown = IridiumTowns.getInstance().getTownManager().getTeamViaLocation(event.getFrom());
-        Optional<Town> toTown = IridiumTowns.getInstance().getTownManager().getTeamViaLocation(event.getTo());
+        Optional<Town> fromTown = IridiumTowns.getInstance().getTeamManager().getTeamViaLocation(event.getFrom());
+        Optional<Town> toTown = IridiumTowns.getInstance().getTeamManager().getTeamViaLocation(event.getTo());
 
         if (!toTown.isPresent()) return;
         if (toTown.get().getId() != (fromTown.map(Town::getId).orElse(0))) {

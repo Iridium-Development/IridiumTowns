@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 public class TownPlaceholderBuilder implements PlaceholderBuilder<Town> {
     @Override
     public List<Placeholder> getPlaceholders(Town town) {
-        List<User> users = IridiumTowns.getInstance().getTownManager().getTeamMembers(town);
+        List<User> users = IridiumTowns.getInstance().getTeamManager().getTeamMembers(town);
         List<String> onlineUsers = users.stream()
                 .filter(u -> u.getPlayer() != null)
                 .map(User::getName)

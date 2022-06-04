@@ -1,8 +1,6 @@
 package com.iridium.iridiumtowns;
 
 import com.iridium.iridiumteams.IridiumTeams;
-import com.iridium.iridiumteams.managers.IridiumUserManager;
-import com.iridium.iridiumteams.managers.TeamManager;
 import com.iridium.iridiumtowns.configs.*;
 import com.iridium.iridiumtowns.database.Town;
 import com.iridium.iridiumtowns.database.User;
@@ -15,7 +13,6 @@ import com.iridium.iridiumtowns.managers.UserManager;
 import com.iridium.iridiumtowns.placeholders.TownPlaceholderBuilder;
 import com.iridium.iridiumtowns.placeholders.UserPlaceholderBuilder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPluginLoader;
@@ -24,26 +21,42 @@ import java.io.File;
 import java.sql.SQLException;
 
 @Getter
-@NoArgsConstructor
 public class IridiumTowns extends IridiumTeams<Town, User> {
 
     private static IridiumTowns instance;
 
-    private TownManager townManager;
+    private Configuration configuration;
+    private Messages messages;
+    private Permissions permissions;
+    private Inventories inventories;
+    private Commands commands;
+    private SQL sql;
+
+    private TownPlaceholderBuilder teamsPlaceholderBuilder;
+    private UserPlaceholderBuilder userPlaceholderBuilder;
+
+    private TownManager teamManager;
     private UserManager userManager;
     private CommandManager commandManager;
     private DatabaseManager databaseManager;
 
     public IridiumTowns(JavaPluginLoader loader, PluginDescriptionFile description, File dataFolder, File file) {
         super(loader, description, dataFolder, file);
+        instance = this;
+    }
+
+    public IridiumTowns() {
+        instance = this;
     }
 
     @Override
     public void onEnable() {
+        super.onEnable();
         instance = this;
 
-        this.townManager = new TownManager();
+        this.teamManager = new TownManager();
         this.userManager = new UserManager();
+        this.commandManager = new CommandManager("iridiumtowns");
         this.databaseManager = new DatabaseManager();
         try {
             databaseManager.init();
@@ -53,66 +66,38 @@ public class IridiumTowns extends IridiumTeams<Town, User> {
             Bukkit.getPluginManager().disablePlugin(this);
             return;
         }
-        super.onEnable();
-        this.commandManager = new CommandManager("iridiumtowns");
+
+        this.teamsPlaceholderBuilder = new TownPlaceholderBuilder();
+        this.userPlaceholderBuilder = new UserPlaceholderBuilder();
     }
 
     @Override
-    public TownPlaceholderBuilder getTeamsPlaceholderBuilder() {
-        return new TownPlaceholderBuilder();
+    public void registerListeners() {
+        super.registerListeners();
+        Bukkit.getPluginManager().registerEvents(new PlayerMoveListener(), this);
+        Bukkit.getPluginManager().registerEvents(new PlayerInteractListener(), this);
     }
 
     @Override
-    public UserPlaceholderBuilder getUserPlaceholderBuilder() {
-        return new UserPlaceholderBuilder();
+    public void loadConfigs() {
+        this.configuration = getPersist().load(Configuration.class);
+        this.messages = getPersist().load(Messages.class);
+        this.commands = getPersist().load(Commands.class);
+        this.sql = getPersist().load(SQL.class);
+        this.inventories = getPersist().load(Inventories.class);
+        this.permissions = getPersist().load(Permissions.class);
+        super.loadConfigs();
     }
 
     @Override
-    public TeamManager<Town, User> getTeamManager() {
-        return townManager;
-    }
-
-    @Override
-    public IridiumUserManager<Town, User> getUserManager() {
-        return userManager;
-    }
-
-    @Override
-    public CommandManager getCommandManager() {
-        return commandManager;
-    }
-
-    @Override
-    public Configuration getConfiguration() {
-        return new Configuration();
-    }
-
-    @Override
-    public Messages getMessages() {
-        return new Messages();
-    }
-
-    @Override
-    public Permissions getPermissions() {
-        return new Permissions();
-    }
-
-    @Override
-    public Inventories getInventories() {
-        return new Inventories();
-    }
-
-    public DatabaseManager getDatabaseManager() {
-        return databaseManager;
-    }
-
-    public SQL getSQL() {
-        return new SQL();
-    }
-
-    @Override
-    public Commands getCommands() {
-        return new Commands();
+    public void saveConfigs() {
+        super.saveConfigs();
+        getPersist().save(configuration);
+        getPersist().save(messages);
+        getPersist().save(commands);
+        getPersist().save(sql);
+        getPersist().save(inventories);
+        getPersist().save(permissions);
     }
 
     @Override
@@ -122,13 +107,6 @@ public class IridiumTowns extends IridiumTeams<Town, User> {
         getDatabaseManager().getInvitesTableManager().save();
         getDatabaseManager().getPermissionsTableManager().save();
         getDatabaseManager().getRegionsTableManager().save();
-    }
-
-    @Override
-    public void registerListeners() {
-        super.registerListeners();
-        Bukkit.getPluginManager().registerEvents(new PlayerMoveListener(), this);
-        Bukkit.getPluginManager().registerEvents(new PlayerInteractListener(), this);
     }
 
     public static IridiumTowns getInstance() {
