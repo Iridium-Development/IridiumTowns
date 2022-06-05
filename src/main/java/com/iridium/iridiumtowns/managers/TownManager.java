@@ -1,6 +1,7 @@
 package com.iridium.iridiumtowns.managers;
 
 import com.iridium.iridiumteams.Rank;
+import com.iridium.iridiumteams.database.TeamBank;
 import com.iridium.iridiumteams.database.TeamInvite;
 import com.iridium.iridiumteams.database.TeamPermission;
 import com.iridium.iridiumteams.managers.TeamManager;
@@ -14,7 +15,8 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
@@ -84,15 +86,15 @@ public class TownManager extends TeamManager<Town, User> {
     @Override
     public boolean getTeamPermission(Town town, int rank, String permission) {
         if (rank == Rank.OWNER.getId()) return true;
-        return IridiumTowns.getInstance().getDatabaseManager().getPermissionsTableManager().getEntry(new TeamPermission<>(town, permission, rank, true))
+        return IridiumTowns.getInstance().getDatabaseManager().getPermissionsTableManager().getEntry(new TeamPermission(town, permission, rank, true))
                 .map(TeamPermission::isAllowed)
                 .orElse(IridiumTowns.getInstance().getPermissionList().get(permission).getDefaultRank() <= rank);
     }
 
     @Override
     public synchronized void setTeamPermission(Town town, int rank, String permission, boolean allowed) {
-        TeamPermission<Town> townPermission = new TeamPermission<>(town, permission, rank, true);
-        Optional<TeamPermission<Town>> teamPermission = IridiumTowns.getInstance().getDatabaseManager().getPermissionsTableManager().getEntry(townPermission);
+        TeamPermission townPermission = new TeamPermission(town, permission, rank, true);
+        Optional<TeamPermission> teamPermission = IridiumTowns.getInstance().getDatabaseManager().getPermissionsTableManager().getEntry(townPermission);
         if (teamPermission.isPresent()) {
             teamPermission.get().setAllowed(allowed);
         } else {
@@ -101,22 +103,34 @@ public class TownManager extends TeamManager<Town, User> {
     }
 
     @Override
-    public Optional<TeamInvite<Town>> getTeamInvite(Town team, User user) {
-        return IridiumTowns.getInstance().getDatabaseManager().getInvitesTableManager().getEntry(new TeamInvite<>(team, user.getUuid(), user.getUuid()));
+    public Optional<TeamInvite> getTeamInvite(Town team, User user) {
+        return IridiumTowns.getInstance().getDatabaseManager().getInvitesTableManager().getEntry(new TeamInvite(team, user.getUuid(), user.getUuid()));
     }
 
     @Override
-    public List<TeamInvite<Town>> getTeamInvites(Town team) {
+    public List<TeamInvite> getTeamInvites(Town team) {
         return IridiumTowns.getInstance().getDatabaseManager().getInvitesTableManager().getEntries(team);
     }
 
     @Override
     public void createTeamInvite(Town team, User user, User invitee) {
-        IridiumTowns.getInstance().getDatabaseManager().getInvitesTableManager().addEntry(new TeamInvite<>(team, user.getUuid(), invitee.getUuid()));
+        IridiumTowns.getInstance().getDatabaseManager().getInvitesTableManager().addEntry(new TeamInvite(team, user.getUuid(), invitee.getUuid()));
     }
 
     @Override
-    public void deleteTeamInvite(TeamInvite<Town> teamInvite) {
+    public void deleteTeamInvite(TeamInvite teamInvite) {
         IridiumTowns.getInstance().getDatabaseManager().getInvitesTableManager().delete(teamInvite);
+    }
+
+    @Override
+    public synchronized TeamBank getTeamBank(Town town, String bankItem) {
+        Optional<TeamBank> teamBank = IridiumTowns.getInstance().getDatabaseManager().getBankTableManager().getEntry(new TeamBank(town, bankItem, 0));
+        if (teamBank.isPresent()) {
+            return teamBank.get();
+        } else {
+            TeamBank bank = new TeamBank(town, bankItem, 0);
+            IridiumTowns.getInstance().getDatabaseManager().getBankTableManager().addEntry(bank);
+            return bank;
+        }
     }
 }

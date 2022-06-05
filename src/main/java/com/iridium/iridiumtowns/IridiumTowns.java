@@ -1,6 +1,7 @@
 package com.iridium.iridiumtowns;
 
 import com.iridium.iridiumteams.IridiumTeams;
+import com.iridium.iridiumteams.configs.BankItems;
 import com.iridium.iridiumtowns.configs.*;
 import com.iridium.iridiumtowns.database.Town;
 import com.iridium.iridiumtowns.database.User;
@@ -13,8 +14,10 @@ import com.iridium.iridiumtowns.managers.UserManager;
 import com.iridium.iridiumtowns.placeholders.TownPlaceholderBuilder;
 import com.iridium.iridiumtowns.placeholders.UserPlaceholderBuilder;
 import lombok.Getter;
+import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginDescriptionFile;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPluginLoader;
 
 import java.io.File;
@@ -30,6 +33,7 @@ public class IridiumTowns extends IridiumTeams<Town, User> {
     private Permissions permissions;
     private Inventories inventories;
     private Commands commands;
+    private BankItems bankItems;
     private SQL sql;
 
     private TownPlaceholderBuilder teamsPlaceholderBuilder;
@@ -39,6 +43,8 @@ public class IridiumTowns extends IridiumTeams<Town, User> {
     private UserManager userManager;
     private CommandManager commandManager;
     private DatabaseManager databaseManager;
+
+    private Economy economy;
 
     public IridiumTowns(JavaPluginLoader loader, PluginDescriptionFile description, File dataFolder, File file) {
         super(loader, description, dataFolder, file);
@@ -69,6 +75,17 @@ public class IridiumTowns extends IridiumTeams<Town, User> {
 
         this.teamsPlaceholderBuilder = new TownPlaceholderBuilder();
         this.userPlaceholderBuilder = new UserPlaceholderBuilder();
+
+        Bukkit.getScheduler().runTask(this, () -> this.economy = setupEconomy());
+    }
+
+    private Economy setupEconomy() {
+        RegisteredServiceProvider<Economy> economyProvider = getServer().getServicesManager().getRegistration(Economy.class);
+        if (economyProvider == null) {
+            getLogger().warning("You do not have an economy plugin installed (like Essentials)");
+            return null;
+        }
+        return economyProvider.getProvider();
     }
 
     @Override
@@ -86,6 +103,7 @@ public class IridiumTowns extends IridiumTeams<Town, User> {
         this.sql = getPersist().load(SQL.class);
         this.inventories = getPersist().load(Inventories.class);
         this.permissions = getPersist().load(Permissions.class);
+        this.bankItems = getPersist().load(BankItems.class);
         super.loadConfigs();
     }
 
@@ -98,6 +116,7 @@ public class IridiumTowns extends IridiumTeams<Town, User> {
         getPersist().save(sql);
         getPersist().save(inventories);
         getPersist().save(permissions);
+        getPersist().save(bankItems);
     }
 
     @Override

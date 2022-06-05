@@ -12,6 +12,7 @@ repositories {
     maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
     maven("https://ci.ender.zone/plugin/repository/everything/")
     maven("https://nexus.iridiumdevelopment.net/repository/maven-releases/")
+    maven("https://jitpack.io")
     mavenCentral()
 }
 
@@ -21,11 +22,12 @@ dependencies {
     implementation("com.j256.ormlite:ormlite-core:6.1")
     implementation("com.j256.ormlite:ormlite-jdbc:6.1")
     implementation("com.github.cryptomorin:XSeries:8.7.1")
-    implementation("com.iridium:IridiumTeams:1.1.9")
+    implementation("com.iridium:IridiumTeams:1.2.0")
 
     // Other dependencies that are not required or already available at runtime
     compileOnly("org.projectlombok:lombok:1.18.24")
     compileOnly("org.spigotmc:spigot-api:1.18-R0.1-SNAPSHOT")
+    compileOnly("com.github.MilkBowl:VaultAPI:1.7")
 
     // Enable lombok annotation processing
     annotationProcessor("org.projectlombok:lombok:1.18.24")

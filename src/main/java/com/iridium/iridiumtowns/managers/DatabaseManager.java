@@ -1,5 +1,6 @@
 package com.iridium.iridiumtowns.managers;
 
+import com.iridium.iridiumteams.database.TeamBank;
 import com.iridium.iridiumteams.database.TeamInvite;
 import com.iridium.iridiumteams.database.TeamPermission;
 import com.iridium.iridiumteams.database.types.LocalDateTimeType;
@@ -36,8 +37,9 @@ public class DatabaseManager {
 
     private UserTableManager userTableManager;
     private TownTableManager townTableManager;
-    private ForeignTownTableManager<TeamInvite<Town>, Integer> invitesTableManager;
-    private ForeignTownTableManager<TeamPermission<Town>, Integer> permissionsTableManager;
+    private ForeignTownTableManager<TeamInvite, Integer> invitesTableManager;
+    private ForeignTownTableManager<TeamPermission, Integer> permissionsTableManager;
+    private ForeignTownTableManager<TeamBank, Integer> bankTableManager;
     private ForeignTownTableManager<TownRegion, Integer> regionsTableManager;
 
     public void init() throws SQLException {
@@ -60,9 +62,10 @@ public class DatabaseManager {
 
         this.userTableManager = new UserTableManager(connectionSource);
         this.townTableManager = new TownTableManager(connectionSource);
-        this.invitesTableManager = new ForeignTownTableManager<>(connectionSource, (Class<TeamInvite<Town>>) (Class<?>) TeamInvite.class, Comparator.comparing((TeamInvite<Town> t) -> t.getTeamID()).thenComparing(TeamInvite::getUser));
-        this.permissionsTableManager = new ForeignTownTableManager<>(connectionSource, (Class<TeamPermission<Town>>) (Class<?>) TeamPermission.class, Comparator.comparing((TeamPermission<Town> t) -> t.getTeamID()).thenComparing(TeamPermission::getPermission));
+        this.invitesTableManager = new ForeignTownTableManager<>(connectionSource, TeamInvite.class, Comparator.comparing(TeamInvite::getTeamID).thenComparing(TeamInvite::getUser));
+        this.permissionsTableManager = new ForeignTownTableManager<>(connectionSource, TeamPermission.class, Comparator.comparing(TeamPermission::getTeamID).thenComparing(TeamPermission::getPermission));
         this.regionsTableManager = new ForeignTownTableManager<>(connectionSource, TownRegion.class, Comparator.comparing(TownRegion::getTeamID));
+        this.bankTableManager = new ForeignTownTableManager<>(connectionSource, TeamBank.class, Comparator.comparing(TeamBank::getTeamID).thenComparing(TeamBank::getBankItem));
     }
 
     /**

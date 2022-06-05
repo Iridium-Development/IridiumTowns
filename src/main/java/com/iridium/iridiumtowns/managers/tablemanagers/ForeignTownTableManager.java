@@ -1,7 +1,6 @@
 package com.iridium.iridiumtowns.managers.tablemanagers;
 
 import com.iridium.iridiumteams.database.TeamData;
-import com.iridium.iridiumteams.database.TeamInvite;
 import com.iridium.iridiumtowns.SortedList;
 import com.iridium.iridiumtowns.database.Town;
 import com.j256.ormlite.support.ConnectionSource;
@@ -11,7 +10,7 @@ import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
-public class ForeignTownTableManager<T extends TeamData<Town>, S> extends TableManager<T, S> {
+public class ForeignTownTableManager<T extends TeamData, S> extends TableManager<T, S> {
 
     private final Comparator<T> comparator;
     private final SortedList<T> townSortedList;
@@ -49,7 +48,7 @@ public class ForeignTownTableManager<T extends TeamData<Town>, S> extends TableM
     }
 
     public List<T> getEntries(@NotNull Town town) {
-        int index = Collections.binarySearch(townSortedList, new TeamData<>(town), Comparator.comparing(TeamData::getTeamID));
+        int index = Collections.binarySearch(townSortedList, new TeamData(town), Comparator.comparing(TeamData::getTeamID));
         if (index < 0) return Collections.emptyList();
 
         int currentIndex = index - 1;
@@ -58,7 +57,7 @@ public class ForeignTownTableManager<T extends TeamData<Town>, S> extends TableM
 
         while (true) {
             if (currentIndex < 0) break;
-            TeamData<Town> townData = getEntries().get(currentIndex);
+            TeamData townData = getEntries().get(currentIndex);
             if (townData == null) {
                 currentIndex--;
                 continue;
@@ -75,7 +74,7 @@ public class ForeignTownTableManager<T extends TeamData<Town>, S> extends TableM
 
         while (true) {
             if (currentIndex >= getEntries().size()) break;
-            TeamData<Town> townData = getEntries().get(currentIndex);
+            TeamData townData = getEntries().get(currentIndex);
             if (townData == null) {
                 currentIndex++;
                 continue;

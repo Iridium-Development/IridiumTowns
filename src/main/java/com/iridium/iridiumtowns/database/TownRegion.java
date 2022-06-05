@@ -17,7 +17,7 @@ import static java.lang.Math.min;
 @Setter
 @NoArgsConstructor
 @DatabaseTable(tableName = "town_regions")
-public class TownRegion extends TeamData<Town> {
+public class TownRegion extends TeamData {
 
     @DatabaseField(columnName = "id", canBeNull = false, generatedId = true)
     private int id;
