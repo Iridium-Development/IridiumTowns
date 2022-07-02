@@ -11,6 +11,7 @@ import com.iridium.iridiumtowns.managers.CommandManager;
 import com.iridium.iridiumtowns.managers.DatabaseManager;
 import com.iridium.iridiumtowns.managers.TownManager;
 import com.iridium.iridiumtowns.managers.UserManager;
+import com.iridium.iridiumtowns.placeholders.TeamChatPlaceholderBuilder;
 import com.iridium.iridiumtowns.placeholders.TownPlaceholderBuilder;
 import com.iridium.iridiumtowns.placeholders.UserPlaceholderBuilder;
 import lombok.Getter;
@@ -34,10 +35,12 @@ public class IridiumTowns extends IridiumTeams<Town, User> {
     private Inventories inventories;
     private Commands commands;
     private BankItems bankItems;
+    private Enhancements enhancements;
     private SQL sql;
 
     private TownPlaceholderBuilder teamsPlaceholderBuilder;
     private UserPlaceholderBuilder userPlaceholderBuilder;
+    private TeamChatPlaceholderBuilder teamChatPlaceholderBuilder;
 
     private TownManager teamManager;
     private UserManager userManager;
@@ -75,6 +78,7 @@ public class IridiumTowns extends IridiumTeams<Town, User> {
 
         this.teamsPlaceholderBuilder = new TownPlaceholderBuilder();
         this.userPlaceholderBuilder = new UserPlaceholderBuilder();
+        this.teamChatPlaceholderBuilder = new TeamChatPlaceholderBuilder();
 
         Bukkit.getScheduler().runTask(this, () -> this.economy = setupEconomy());
     }
@@ -104,6 +108,7 @@ public class IridiumTowns extends IridiumTeams<Town, User> {
         this.inventories = getPersist().load(Inventories.class);
         this.permissions = getPersist().load(Permissions.class);
         this.bankItems = getPersist().load(BankItems.class);
+        this.enhancements = getPersist().load(Enhancements.class);
         super.loadConfigs();
     }
 
@@ -117,6 +122,7 @@ public class IridiumTowns extends IridiumTeams<Town, User> {
         getPersist().save(inventories);
         getPersist().save(permissions);
         getPersist().save(bankItems);
+        getPersist().save(enhancements);
     }
 
     @Override
@@ -126,6 +132,7 @@ public class IridiumTowns extends IridiumTeams<Town, User> {
         getDatabaseManager().getInvitesTableManager().save();
         getDatabaseManager().getPermissionsTableManager().save();
         getDatabaseManager().getRegionsTableManager().save();
+        getDatabaseManager().getEnhancementTableManager().save();
     }
 
     public static IridiumTowns getInstance() {

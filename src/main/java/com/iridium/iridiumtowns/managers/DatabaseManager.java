@@ -1,6 +1,7 @@
 package com.iridium.iridiumtowns.managers;
 
 import com.iridium.iridiumteams.database.TeamBank;
+import com.iridium.iridiumteams.database.TeamEnhancement;
 import com.iridium.iridiumteams.database.TeamInvite;
 import com.iridium.iridiumteams.database.TeamPermission;
 import com.iridium.iridiumteams.database.types.LocalDateTimeType;
@@ -41,6 +42,7 @@ public class DatabaseManager {
     private ForeignTownTableManager<TeamPermission, Integer> permissionsTableManager;
     private ForeignTownTableManager<TeamBank, Integer> bankTableManager;
     private ForeignTownTableManager<TownRegion, Integer> regionsTableManager;
+    private ForeignTownTableManager<TeamEnhancement, Integer> enhancementTableManager;
 
     public void init() throws SQLException {
         LoggerFactory.setLogBackendFactory(new NullLogBackend.NullLogBackendFactory());
@@ -66,6 +68,7 @@ public class DatabaseManager {
         this.permissionsTableManager = new ForeignTownTableManager<>(connectionSource, TeamPermission.class, Comparator.comparing(TeamPermission::getTeamID).thenComparing(TeamPermission::getPermission));
         this.regionsTableManager = new ForeignTownTableManager<>(connectionSource, TownRegion.class, Comparator.comparing(TownRegion::getTeamID));
         this.bankTableManager = new ForeignTownTableManager<>(connectionSource, TeamBank.class, Comparator.comparing(TeamBank::getTeamID).thenComparing(TeamBank::getBankItem));
+        this.enhancementTableManager = new ForeignTownTableManager<>(connectionSource, TeamEnhancement.class, Comparator.comparing(TeamEnhancement::getTeamID).thenComparing(TeamEnhancement::getEnhancementName));
     }
 
     /**

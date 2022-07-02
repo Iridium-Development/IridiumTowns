@@ -2,6 +2,7 @@ package com.iridium.iridiumtowns.managers;
 
 import com.iridium.iridiumteams.Rank;
 import com.iridium.iridiumteams.database.TeamBank;
+import com.iridium.iridiumteams.database.TeamEnhancement;
 import com.iridium.iridiumteams.database.TeamInvite;
 import com.iridium.iridiumteams.database.TeamPermission;
 import com.iridium.iridiumteams.managers.TeamManager;
@@ -131,6 +132,18 @@ public class TownManager extends TeamManager<Town, User> {
             TeamBank bank = new TeamBank(town, bankItem, 0);
             IridiumTowns.getInstance().getDatabaseManager().getBankTableManager().addEntry(bank);
             return bank;
+        }
+    }
+
+    @Override
+    public TeamEnhancement getTeamEnhancement(Town town, String enhancementName) {
+        Optional<TeamEnhancement> teamEnhancement = IridiumTowns.getInstance().getDatabaseManager().getEnhancementTableManager().getEntry(new TeamEnhancement(town, enhancementName, 0));
+        if (teamEnhancement.isPresent()) {
+            return teamEnhancement.get();
+        } else {
+            TeamEnhancement enhancement = new TeamEnhancement(town, enhancementName, 1);
+            IridiumTowns.getInstance().getDatabaseManager().getEnhancementTableManager().addEntry(enhancement);
+            return enhancement;
         }
     }
 }
