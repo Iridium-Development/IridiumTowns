@@ -23,6 +23,10 @@ import java.util.stream.Collectors;
 
 public class TownManager extends TeamManager<Town, User> {
 
+    public TownManager() {
+        super(IridiumTowns.getInstance());
+    }
+
     @Override
     public Optional<Town> getTeamViaID(int id) {
         return IridiumTowns.getInstance().getDatabaseManager().getTownTableManager().getTown(id);
@@ -141,7 +145,7 @@ public class TownManager extends TeamManager<Town, User> {
         if (teamEnhancement.isPresent()) {
             return teamEnhancement.get();
         } else {
-            TeamEnhancement enhancement = new TeamEnhancement(town, enhancementName, 1);
+            TeamEnhancement enhancement = new TeamEnhancement(town, enhancementName, 0);
             IridiumTowns.getInstance().getDatabaseManager().getEnhancementTableManager().addEntry(enhancement);
             return enhancement;
         }
