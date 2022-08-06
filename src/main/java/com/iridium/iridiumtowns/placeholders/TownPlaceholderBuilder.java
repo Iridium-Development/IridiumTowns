@@ -1,12 +1,15 @@
 package com.iridium.iridiumtowns.placeholders;
 
+import com.iridium.iridiumcore.dependencies.xseries.XMaterial;
 import com.iridium.iridiumcore.utils.Placeholder;
 import com.iridium.iridiumteams.PlaceholderBuilder;
 import com.iridium.iridiumteams.Rank;
 import com.iridium.iridiumtowns.IridiumTowns;
 import com.iridium.iridiumtowns.database.Town;
 import com.iridium.iridiumtowns.database.User;
+import org.bukkit.entity.EntityType;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -24,7 +27,8 @@ public class TownPlaceholderBuilder implements PlaceholderBuilder<Town> {
                 .filter(u -> u.getPlayer() == null)
                 .map(User::getName)
                 .collect(Collectors.toList());
-        return Arrays.asList(
+
+        List<Placeholder> placeholderList = new ArrayList<>(Arrays.asList(
                 new Placeholder("town_name", town.getName()),
                 new Placeholder("town_owner", IridiumTowns.getInstance().getTeamManager().getTeamMembers(town).stream()
                         .filter(user -> user.getUserRank() == Rank.OWNER.getId())
@@ -42,23 +46,39 @@ public class TownPlaceholderBuilder implements PlaceholderBuilder<Town> {
                 new Placeholder("town_members_offline", String.join(", ", offlineUsers)),
                 new Placeholder("town_members_offline_count", String.valueOf(offlineUsers.size())),
                 new Placeholder("town_members_count", String.valueOf(users.size()))
-        );
+        ));
+        for (XMaterial xMaterial : XMaterial.values()) {
+            placeholderList.add(new Placeholder(xMaterial.name().toUpperCase() + "_AMOUNT", String.valueOf(IridiumTowns.getInstance().getTeamManager().getTeamBlock(town, xMaterial).getAmount())));
+        }
+        for (EntityType entityType : EntityType.values()) {
+            placeholderList.add(new Placeholder(entityType.name().toUpperCase() + "_AMOUNT", String.valueOf(IridiumTowns.getInstance().getTeamManager().getTeamSpawners(town, entityType).getAmount())));
+        }
+        return placeholderList;
     }
 
     public List<Placeholder> getDefaultPlaceholders() {
-        return Arrays.asList(
+        List<Placeholder> placeholderList = new ArrayList<>(Arrays.asList(
                 new Placeholder("town_name", "N/A"),
+                new Placeholder("town_owner", "N/A"),
                 new Placeholder("town_description", "N/A"),
                 new Placeholder("town_value", "N/A"),
                 new Placeholder("town_level", "N/A"),
+                new Placeholder("town_experience", "N/A"),
                 new Placeholder("town_value_rank", "N/A"),
-                new Placeholder("town_level_rank", "N/A"),
+                new Placeholder("town_experience_rank", "N/A"),
                 new Placeholder("town_members_online", "N/A"),
                 new Placeholder("town_members_online_count", "N/A"),
                 new Placeholder("town_members_offline", "N/A"),
                 new Placeholder("town_members_offline_count", "N/A"),
                 new Placeholder("town_members_count", "N/A")
-        );
+        ));
+        for (XMaterial xMaterial : XMaterial.values()) {
+            placeholderList.add(new Placeholder(xMaterial.name().toUpperCase() + "_AMOUNT", "N/A"));
+        }
+        for (EntityType entityType : EntityType.values()) {
+            placeholderList.add(new Placeholder(entityType.name().toUpperCase() + "_AMOUNT", "N/A"));
+        }
+        return placeholderList;
     }
 
     @Override
