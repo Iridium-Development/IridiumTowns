@@ -11,6 +11,6 @@ public class Messages extends com.iridium.iridiumteams.configs.Messages {
     public String claimSet = "%prefix% &7Your claim has been created.";
 
     public Messages() {
-        super("Town", "t", "IridiumTowns", "&9");
+        super("Town", "t", "IridiumTowns", "&2");
     }
 }

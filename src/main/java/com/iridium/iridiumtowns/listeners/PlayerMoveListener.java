@@ -25,7 +25,7 @@ public class PlayerMoveListener implements Listener {
 
         if (!toTown.isPresent()) return;
         if (toTown.get().getId() != (fromTown.map(Town::getId).orElse(0))) {
-            IridiumTowns.getInstance().getNms().sendTitle(player, StringUtils.color("&9") + toTown.get().getName(), StringUtils.color(ChatColor.GRAY + toTown.get().getDescription()), 20, 40, 20);
+            IridiumTowns.getInstance().getNms().sendTitle(player, StringUtils.color("&2") + toTown.get().getName(), StringUtils.color(ChatColor.GRAY + toTown.get().getDescription()), 20, 40, 20);
         }
     }
 

@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class CommandManager extends com.iridium.iridiumteams.managers.CommandManager<Town, User> {
     public CommandManager(String command) {
-        super(IridiumTowns.getInstance(), "&9", command);
+        super(IridiumTowns.getInstance(), "&2", command);
         registerCommand(IridiumTowns.getInstance().getCommands().claimCommand);
     }
 
