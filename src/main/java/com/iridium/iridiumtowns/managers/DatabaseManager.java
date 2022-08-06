@@ -1,14 +1,14 @@
 package com.iridium.iridiumtowns.managers;
 
 import com.iridium.iridiumteams.database.*;
+import com.iridium.iridiumteams.database.types.InventoryType;
 import com.iridium.iridiumteams.database.types.LocalDateTimeType;
+import com.iridium.iridiumteams.database.types.LocationType;
+import com.iridium.iridiumteams.database.types.XMaterialType;
 import com.iridium.iridiumtowns.IridiumTowns;
 import com.iridium.iridiumtowns.configs.SQL;
 import com.iridium.iridiumtowns.database.Town;
 import com.iridium.iridiumtowns.database.TownRegion;
-import com.iridium.iridiumtowns.database.types.InventoryType;
-import com.iridium.iridiumtowns.database.types.LocationType;
-import com.iridium.iridiumtowns.database.types.XMaterialType;
 import com.iridium.iridiumtowns.managers.tablemanagers.ForeignTownTableManager;
 import com.iridium.iridiumtowns.managers.tablemanagers.TownTableManager;
 import com.iridium.iridiumtowns.managers.tablemanagers.UserTableManager;
