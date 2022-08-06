@@ -26,6 +26,10 @@ public class TownPlaceholderBuilder implements PlaceholderBuilder<Town> {
         return Arrays.asList(
                 new Placeholder("town_name", town.getName()),
                 new Placeholder("town_description", town.getDescription()),
+                new Placeholder("town_value", String.valueOf(IridiumTowns.getInstance().getTeamManager().getTeamValue(town))),
+                new Placeholder("town_level", String.valueOf(town.getLevel())),
+                new Placeholder("town_value_rank", "1"),
+                new Placeholder("town_level_rank", "1"),
                 new Placeholder("town_members_online", String.join(", ", onlineUsers)),
                 new Placeholder("town_members_online_count", String.valueOf(onlineUsers.size())),
                 new Placeholder("town_members_offline", String.join(", ", offlineUsers)),
@@ -38,6 +42,10 @@ public class TownPlaceholderBuilder implements PlaceholderBuilder<Town> {
         return Arrays.asList(
                 new Placeholder("town_name", "N/A"),
                 new Placeholder("town_description", "N/A"),
+                new Placeholder("town_value", "N/A"),
+                new Placeholder("town_level", "N/A"),
+                new Placeholder("town_value_rank", "N/A"),
+                new Placeholder("town_level_rank", "N/A"),
                 new Placeholder("town_members_online", "N/A"),
                 new Placeholder("town_members_online_count", "N/A"),
                 new Placeholder("town_members_offline", "N/A"),

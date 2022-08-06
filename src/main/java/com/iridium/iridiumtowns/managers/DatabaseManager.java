@@ -1,9 +1,6 @@
 package com.iridium.iridiumtowns.managers;
 
-import com.iridium.iridiumteams.database.TeamBank;
-import com.iridium.iridiumteams.database.TeamEnhancement;
-import com.iridium.iridiumteams.database.TeamInvite;
-import com.iridium.iridiumteams.database.TeamPermission;
+import com.iridium.iridiumteams.database.*;
 import com.iridium.iridiumteams.database.types.LocalDateTimeType;
 import com.iridium.iridiumtowns.IridiumTowns;
 import com.iridium.iridiumtowns.configs.SQL;
@@ -43,6 +40,8 @@ public class DatabaseManager {
     private ForeignTownTableManager<TeamBank, Integer> bankTableManager;
     private ForeignTownTableManager<TownRegion, Integer> regionsTableManager;
     private ForeignTownTableManager<TeamEnhancement, Integer> enhancementTableManager;
+    private ForeignTownTableManager<TeamBlock, Integer> teamBlockTableManager;
+    private ForeignTownTableManager<TeamSpawners, Integer> teamSpawnerTableManager;
 
     public void init() throws SQLException {
         LoggerFactory.setLogBackendFactory(new NullLogBackend.NullLogBackendFactory());
@@ -69,6 +68,8 @@ public class DatabaseManager {
         this.regionsTableManager = new ForeignTownTableManager<>(connectionSource, TownRegion.class, Comparator.comparing(TownRegion::getTeamID));
         this.bankTableManager = new ForeignTownTableManager<>(connectionSource, TeamBank.class, Comparator.comparing(TeamBank::getTeamID).thenComparing(TeamBank::getBankItem));
         this.enhancementTableManager = new ForeignTownTableManager<>(connectionSource, TeamEnhancement.class, Comparator.comparing(TeamEnhancement::getTeamID).thenComparing(TeamEnhancement::getEnhancementName));
+        this.teamBlockTableManager = new ForeignTownTableManager<>(connectionSource, TeamBlock.class, Comparator.comparing(TeamBlock::getTeamID).thenComparing(TeamBlock::getXMaterial));
+        this.teamSpawnerTableManager = new ForeignTownTableManager<>(connectionSource, TeamSpawners.class, Comparator.comparing(TeamSpawners::getTeamID).thenComparing(TeamSpawners::getEntityType));
     }
 
     /**

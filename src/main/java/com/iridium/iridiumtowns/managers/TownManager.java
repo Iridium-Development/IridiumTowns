@@ -1,10 +1,8 @@
 package com.iridium.iridiumtowns.managers;
 
+import com.iridium.iridiumcore.dependencies.xseries.XMaterial;
 import com.iridium.iridiumteams.Rank;
-import com.iridium.iridiumteams.database.TeamBank;
-import com.iridium.iridiumteams.database.TeamEnhancement;
-import com.iridium.iridiumteams.database.TeamInvite;
-import com.iridium.iridiumteams.database.TeamPermission;
+import com.iridium.iridiumteams.database.*;
 import com.iridium.iridiumteams.managers.TeamManager;
 import com.iridium.iridiumtowns.IridiumTowns;
 import com.iridium.iridiumtowns.database.Town;
@@ -13,6 +11,7 @@ import com.iridium.iridiumtowns.database.User;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -136,6 +135,30 @@ public class TownManager extends TeamManager<Town, User> {
             TeamBank bank = new TeamBank(town, bankItem, 0);
             IridiumTowns.getInstance().getDatabaseManager().getBankTableManager().addEntry(bank);
             return bank;
+        }
+    }
+
+    @Override
+    public synchronized TeamSpawners getTeamSpawners(Town town, EntityType entityType) {
+        Optional<TeamSpawners> teamSpawner = IridiumTowns.getInstance().getDatabaseManager().getTeamSpawnerTableManager().getEntry(new TeamSpawners(town, entityType, 0));
+        if (teamSpawner.isPresent()) {
+            return teamSpawner.get();
+        } else {
+            TeamSpawners spawner = new TeamSpawners(town, entityType, 0);
+            IridiumTowns.getInstance().getDatabaseManager().getTeamSpawnerTableManager().addEntry(spawner);
+            return spawner;
+        }
+    }
+
+    @Override
+    public synchronized TeamBlock getTeamBlock(Town town, XMaterial xMaterial) {
+        Optional<TeamBlock> teamBlock = IridiumTowns.getInstance().getDatabaseManager().getTeamBlockTableManager().getEntry(new TeamBlock(town, xMaterial, 0));
+        if (teamBlock.isPresent()) {
+            return teamBlock.get();
+        } else {
+            TeamBlock block = new TeamBlock(town, xMaterial, 0);
+            IridiumTowns.getInstance().getDatabaseManager().getTeamBlockTableManager().addEntry(block);
+            return block;
         }
     }
 
