@@ -37,6 +37,7 @@ public class IridiumTowns extends IridiumTeams<Town, User> {
     private BankItems bankItems;
     private Enhancements enhancements;
     private BlockValues blockValues;
+    private Top top;
     private SQL sql;
 
     private TownPlaceholderBuilder teamsPlaceholderBuilder;
@@ -111,6 +112,7 @@ public class IridiumTowns extends IridiumTeams<Town, User> {
         this.bankItems = getPersist().load(BankItems.class);
         this.enhancements = getPersist().load(Enhancements.class);
         this.blockValues = getPersist().load(BlockValues.class);
+        this.top = getPersist().load(Top.class);
         super.loadConfigs();
     }
 
@@ -126,6 +128,7 @@ public class IridiumTowns extends IridiumTeams<Town, User> {
         getPersist().save(bankItems);
         getPersist().save(enhancements);
         getPersist().save(blockValues);
+        getPersist().save(top);
     }
 
     @Override

@@ -14,4 +14,9 @@ public class Town extends Team {
     public Town(int id) {
         setId(id);
     }
+
+    @Override
+    public double getValue() {
+        return IridiumTowns.getInstance().getTeamManager().getTeamValue(this);
+    }
 }

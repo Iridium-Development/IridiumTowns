@@ -58,6 +58,11 @@ public class TownManager extends TeamManager<Town, User> {
     }
 
     @Override
+    public List<Town> getTeams() {
+        return IridiumTowns.getInstance().getDatabaseManager().getTownTableManager().getEntries();
+    }
+
+    @Override
     public List<User> getTeamMembers(Town team) {
         return IridiumTowns.getInstance().getDatabaseManager().getUserTableManager().getEntries().stream()
                 .filter(user -> user.getTeamID() == team.getId())
