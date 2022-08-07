@@ -8,15 +8,14 @@ import com.iridium.iridiumtowns.IridiumTowns;
 import com.iridium.iridiumtowns.database.Town;
 import com.iridium.iridiumtowns.database.TownRegion;
 import com.iridium.iridiumtowns.database.User;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.OfflinePlayer;
+import org.bukkit.*;
+import org.bukkit.block.BlockState;
+import org.bukkit.block.CreatureSpawner;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
@@ -177,5 +176,82 @@ public class TownManager extends TeamManager<Town, User> {
             IridiumTowns.getInstance().getDatabaseManager().getEnhancementTableManager().addEntry(enhancement);
             return enhancement;
         }
+    }
+
+    public CompletableFuture<List<CreatureSpawner>> getSpawners(Chunk chunk, TownRegion townRegion) {
+        CompletableFuture<List<CreatureSpawner>> completableFuture = new CompletableFuture<>();
+        Bukkit.getScheduler().runTask(IridiumTowns.getInstance(), () -> {
+            List<CreatureSpawner> creatureSpawners = new ArrayList<>();
+            for (BlockState blockState : chunk.getTileEntities()) {
+                if (!townRegion.isInRegion(blockState.getLocation())) continue;
+                if (!(blockState instanceof CreatureSpawner)) continue;
+                creatureSpawners.add((CreatureSpawner) blockState);
+            }
+            completableFuture.complete(creatureSpawners);
+        });
+        return completableFuture;
+    }
+
+    @Override
+    public CompletableFuture<Void> recalculateTeam(Town town) {
+        Map<XMaterial, Integer> teamBlocks = new HashMap<>();
+        Map<EntityType, Integer> teamSpawners = new HashMap<>();
+        return CompletableFuture.runAsync(() -> {
+            List<TownRegion> townRegions = IridiumTowns.getInstance().getDatabaseManager().getRegionsTableManager().getEntries(town);
+            for (TownRegion townRegion : townRegions) {
+                List<Chunk> chunks = getTownChunks(townRegion).join();
+                for (Chunk chunk : chunks) {
+                    ChunkSnapshot chunkSnapshot = chunk.getChunkSnapshot(true, false, false);
+                    for (int x = 0; x < 16; x++) {
+                        for (int z = 0; z < 16; z++) {
+                            final int maxy = chunkSnapshot.getHighestBlockYAt(x, z);
+                            for (int y = 0; y <= maxy; y++) {
+                                if (townRegion.isInRegion(x + (chunkSnapshot.getX() * 16), y, z + (chunkSnapshot.getZ() * 16))) {
+                                    XMaterial material = XMaterial.matchXMaterial(chunkSnapshot.getBlockType(x, y, z));
+                                    if (material == XMaterial.AIR) continue;
+                                    teamBlocks.put(material, teamBlocks.getOrDefault(material, 0) + 1);
+                                }
+                            }
+                        }
+                    }
+                    getSpawners(chunk, townRegion).join().forEach(creatureSpawner ->
+                            teamSpawners.put(creatureSpawner.getSpawnedType(), teamSpawners.getOrDefault(creatureSpawner.getSpawnedType(), 0) + 1)
+                    );
+                }
+            }
+        }).thenRun(() -> Bukkit.getScheduler().runTask(IridiumTowns.getInstance(), () -> {
+            List<TeamBlock> blocks = IridiumTowns.getInstance().getDatabaseManager().getTeamBlockTableManager().getEntries(town);
+            List<TeamSpawners> spawners = IridiumTowns.getInstance().getDatabaseManager().getTeamSpawnerTableManager().getEntries(town);
+            for (TeamBlock teamBlock : blocks) {
+                teamBlock.setAmount(teamBlocks.getOrDefault(teamBlock.getXMaterial(), 0));
+            }
+            for (TeamSpawners teamSpawner : spawners) {
+                teamSpawner.setAmount(teamSpawners.getOrDefault(teamSpawner.getEntityType(), 0));
+            }
+        }));
+    }
+
+    public CompletableFuture<List<Chunk>> getTownChunks(TownRegion townRegion) {
+        return CompletableFuture.supplyAsync(() -> {
+            List<CompletableFuture<Chunk>> chunks = new ArrayList<>();
+
+            Location pos1 = townRegion.getPosition1();
+            Location pos2 = townRegion.getPosition2();
+
+            int minX = pos1.getBlockX() >> 4;
+            int minZ = pos1.getBlockZ() >> 4;
+            int maxX = pos2.getBlockX() >> 4;
+            int maxZ = pos2.getBlockZ() >> 4;
+
+            for (int x = minX; x <= maxX; x++) {
+                for (int z = minZ; z <= maxZ; z++) {
+                    chunks.add(IridiumTowns.getInstance().getMultiVersion().getChunkAt(pos1.getWorld(), x, z));
+                }
+            }
+            return chunks.stream().map(CompletableFuture::join).collect(Collectors.toList());
+        }).exceptionally(throwable -> {
+            throwable.printStackTrace();
+            return Collections.emptyList();
+        });
     }
 }

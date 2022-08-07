@@ -62,7 +62,6 @@ public class IridiumTowns extends IridiumTeams<Town, User> {
 
     @Override
     public void onEnable() {
-        super.onEnable();
         instance = this;
 
         this.teamManager = new TownManager();
@@ -83,6 +82,7 @@ public class IridiumTowns extends IridiumTeams<Town, User> {
         this.teamChatPlaceholderBuilder = new TeamChatPlaceholderBuilder();
 
         Bukkit.getScheduler().runTask(this, () -> this.economy = setupEconomy());
+        super.onEnable();
     }
 
     private Economy setupEconomy() {
