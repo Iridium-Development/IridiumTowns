@@ -208,7 +208,6 @@ public class TownManager extends TeamManager<Town, User> {
                             for (int y = 0; y <= maxy; y++) {
                                 if (townRegion.isInRegion(x + (chunkSnapshot.getX() * 16), y, z + (chunkSnapshot.getZ() * 16))) {
                                     XMaterial material = XMaterial.matchXMaterial(chunkSnapshot.getBlockType(x, y, z));
-                                    if (material == XMaterial.AIR) continue;
                                     teamBlocks.put(material, teamBlocks.getOrDefault(material, 0) + 1);
                                 }
                             }
@@ -229,6 +228,26 @@ public class TownManager extends TeamManager<Town, User> {
                 teamSpawner.setAmount(teamSpawners.getOrDefault(teamSpawner.getEntityType(), 0));
             }
         }));
+    }
+
+    @Override
+    public void createWarp(Town town, Location location, String name, String password) {
+        IridiumTowns.getInstance().getDatabaseManager().getTeamWarpTableManager().addEntry(new TeamWarp(town, location, name, password));
+    }
+
+    @Override
+    public void deleteWarp(TeamWarp teamWarp) {
+        IridiumTowns.getInstance().getDatabaseManager().getTeamWarpTableManager().delete(teamWarp);
+    }
+
+    @Override
+    public List<TeamWarp> getTeamWarps(Town town) {
+        return IridiumTowns.getInstance().getDatabaseManager().getTeamWarpTableManager().getEntries(town);
+    }
+
+    @Override
+    public Optional<TeamWarp> getTeamWarp(Town town, String name) {
+        return IridiumTowns.getInstance().getDatabaseManager().getTeamWarpTableManager().getEntry(new TeamWarp(town, null, name));
     }
 
     public CompletableFuture<List<Chunk>> getTownChunks(TownRegion townRegion) {
