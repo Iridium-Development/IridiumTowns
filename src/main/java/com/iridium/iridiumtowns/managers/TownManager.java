@@ -231,8 +231,8 @@ public class TownManager extends TeamManager<Town, User> {
     }
 
     @Override
-    public void createWarp(Town town, Location location, String name, String password) {
-        IridiumTowns.getInstance().getDatabaseManager().getTeamWarpTableManager().addEntry(new TeamWarp(town, location, name, password));
+    public void createWarp(Town town, UUID creator, Location location, String name, String password) {
+        IridiumTowns.getInstance().getDatabaseManager().getTeamWarpTableManager().addEntry(new TeamWarp(town, creator, location, name, password));
     }
 
     @Override
@@ -247,7 +247,7 @@ public class TownManager extends TeamManager<Town, User> {
 
     @Override
     public Optional<TeamWarp> getTeamWarp(Town town, String name) {
-        return IridiumTowns.getInstance().getDatabaseManager().getTeamWarpTableManager().getEntry(new TeamWarp(town, null, name));
+        return IridiumTowns.getInstance().getDatabaseManager().getTeamWarpTableManager().getEntry(new TeamWarp(town, UUID.randomUUID(), null, name));
     }
 
     public CompletableFuture<List<Chunk>> getTownChunks(TownRegion townRegion) {
