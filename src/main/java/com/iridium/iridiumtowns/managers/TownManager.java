@@ -15,6 +15,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
@@ -248,6 +249,28 @@ public class TownManager extends TeamManager<Town, User> {
     @Override
     public Optional<TeamWarp> getTeamWarp(Town town, String name) {
         return IridiumTowns.getInstance().getDatabaseManager().getTeamWarpTableManager().getEntry(new TeamWarp(town, UUID.randomUUID(), null, name));
+    }
+
+    @Override
+    public List<TeamMission> getTeamMissions(Town town) {
+        return IridiumTowns.getInstance().getDatabaseManager().getTeamMissionTableManager().getEntries(town);
+    }
+
+    @Override
+    public TeamMission getTeamMission(Town town, String missionName, int missionIndex) {
+        Optional<TeamMission> teamEnhancement = IridiumTowns.getInstance().getDatabaseManager().getTeamMissionTableManager().getEntry(new TeamMission(town, missionName, missionIndex, LocalDateTime.now()));
+        if (teamEnhancement.isPresent()) {
+            return teamEnhancement.get();
+        } else {
+            TeamMission mission = new TeamMission(town, missionName, missionIndex, LocalDateTime.now().plusSeconds(10));
+            IridiumTowns.getInstance().getDatabaseManager().getTeamMissionTableManager().addEntry(mission);
+            return mission;
+        }
+    }
+
+    @Override
+    public void deleteTeamMission(TeamMission teamMission) {
+        IridiumTowns.getInstance().getDatabaseManager().getTeamMissionTableManager().delete(teamMission);
     }
 
     public CompletableFuture<List<Chunk>> getTownChunks(TownRegion townRegion) {

@@ -43,6 +43,7 @@ public class DatabaseManager {
     private ForeignTownTableManager<TeamBlock, Integer> teamBlockTableManager;
     private ForeignTownTableManager<TeamSpawners, Integer> teamSpawnerTableManager;
     private ForeignTownTableManager<TeamWarp, Integer> teamWarpTableManager;
+    private ForeignTownTableManager<TeamMission, Integer> teamMissionTableManager;
 
     public void init() throws SQLException {
         LoggerFactory.setLogBackendFactory(new NullLogBackend.NullLogBackendFactory());
@@ -72,6 +73,7 @@ public class DatabaseManager {
         this.teamBlockTableManager = new ForeignTownTableManager<>(connectionSource, TeamBlock.class, Comparator.comparing(TeamBlock::getTeamID).thenComparing(TeamBlock::getXMaterial));
         this.teamSpawnerTableManager = new ForeignTownTableManager<>(connectionSource, TeamSpawners.class, Comparator.comparing(TeamSpawners::getTeamID).thenComparing(TeamSpawners::getEntityType));
         this.teamWarpTableManager = new ForeignTownTableManager<>(connectionSource, TeamWarp.class, Comparator.comparing(TeamWarp::getTeamID).thenComparing(TeamWarp::getName));
+        this.teamMissionTableManager = new ForeignTownTableManager<>(connectionSource, TeamMission.class, Comparator.comparing(TeamMission::getTeamID).thenComparing(TeamMission::getMissionName).thenComparing(TeamMission::getMissionIndex));
     }
 
     /**

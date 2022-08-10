@@ -2,6 +2,8 @@ package com.iridium.iridiumtowns;
 
 import com.iridium.iridiumteams.IridiumTeams;
 import com.iridium.iridiumteams.configs.BankItems;
+import com.iridium.iridiumteams.configs.Missions;
+import com.iridium.iridiumteams.managers.MissionManager;
 import com.iridium.iridiumtowns.configs.*;
 import com.iridium.iridiumtowns.database.Town;
 import com.iridium.iridiumtowns.database.User;
@@ -39,6 +41,7 @@ public class IridiumTowns extends IridiumTeams<Town, User> {
     private BlockValues blockValues;
     private Top top;
     private SQL sql;
+    private Missions missions;
 
     private TownPlaceholderBuilder teamsPlaceholderBuilder;
     private UserPlaceholderBuilder userPlaceholderBuilder;
@@ -48,6 +51,7 @@ public class IridiumTowns extends IridiumTeams<Town, User> {
     private UserManager userManager;
     private CommandManager commandManager;
     private DatabaseManager databaseManager;
+    private MissionManager<Town, User> missionManager;
 
     private Economy economy;
 
@@ -68,6 +72,7 @@ public class IridiumTowns extends IridiumTeams<Town, User> {
         this.userManager = new UserManager();
         this.commandManager = new CommandManager("iridiumtowns");
         this.databaseManager = new DatabaseManager();
+        this.missionManager = new MissionManager<>(this);
         try {
             databaseManager.init();
         } catch (SQLException exception) {
@@ -113,6 +118,7 @@ public class IridiumTowns extends IridiumTeams<Town, User> {
         this.enhancements = getPersist().load(Enhancements.class);
         this.blockValues = getPersist().load(BlockValues.class);
         this.top = getPersist().load(Top.class);
+        this.missions = getPersist().load(Missions.class);
         super.loadConfigs();
     }
 
@@ -129,6 +135,7 @@ public class IridiumTowns extends IridiumTeams<Town, User> {
         getPersist().save(enhancements);
         getPersist().save(blockValues);
         getPersist().save(top);
+        getPersist().save(missions);
     }
 
     @Override
@@ -141,6 +148,7 @@ public class IridiumTowns extends IridiumTeams<Town, User> {
         getDatabaseManager().getEnhancementTableManager().save();
         getDatabaseManager().getTeamBlockTableManager().save();
         getDatabaseManager().getTeamSpawnerTableManager().save();
+        getDatabaseManager().getTeamMissionTableManager().save();
     }
 
     public static IridiumTowns getInstance() {
