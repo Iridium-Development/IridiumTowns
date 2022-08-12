@@ -4,6 +4,8 @@ import com.iridium.iridiumcore.dependencies.xseries.XMaterial;
 import com.iridium.iridiumteams.Rank;
 import com.iridium.iridiumteams.database.*;
 import com.iridium.iridiumteams.managers.TeamManager;
+import com.iridium.iridiumteams.missions.Mission;
+import com.iridium.iridiumteams.missions.MissionType;
 import com.iridium.iridiumtowns.IridiumTowns;
 import com.iridium.iridiumtowns.database.Town;
 import com.iridium.iridiumtowns.database.TownRegion;
@@ -257,20 +259,43 @@ public class TownManager extends TeamManager<Town, User> {
     }
 
     @Override
-    public TeamMission getTeamMission(Town town, String missionName, int missionIndex) {
-        Optional<TeamMission> teamEnhancement = IridiumTowns.getInstance().getDatabaseManager().getTeamMissionTableManager().getEntry(new TeamMission(town, missionName, missionIndex, LocalDateTime.now()));
-        if (teamEnhancement.isPresent()) {
-            return teamEnhancement.get();
+    public TeamMission getTeamMission(Town town, String missionName) {
+        Mission mission = IridiumTowns.getInstance().getMissions().missions.get(missionName);
+        LocalDateTime localDateTime = IridiumTowns.getInstance().getMissionManager().getExpirationTime(mission == null ? MissionType.ONCE : mission.getMissionType(), LocalDateTime.now());
+
+        TeamMission newTeamMission = new TeamMission(town, missionName, localDateTime);
+        Optional<TeamMission> teamMission = IridiumTowns.getInstance().getDatabaseManager().getTeamMissionTableManager().getEntry(newTeamMission);
+        if (teamMission.isPresent()) {
+            return teamMission.get();
         } else {
-            TeamMission mission = new TeamMission(town, missionName, missionIndex, LocalDateTime.now().plusSeconds(10));
-            IridiumTowns.getInstance().getDatabaseManager().getTeamMissionTableManager().addEntry(mission);
-            return mission;
+            IridiumTowns.getInstance().getDatabaseManager().getTeamMissionTableManager().addEntry(newTeamMission);
+            return newTeamMission;
+        }
+    }
+
+    @Override
+    public TeamMissionData getTeamMissionData(TeamMission teamMission, int missionIndex) {
+        Optional<TeamMissionData> teamMissionData = IridiumTowns.getInstance().getDatabaseManager().getTeamMissionDataTableManager().getEntry(new TeamMissionData(teamMission, missionIndex));
+        if (teamMissionData.isPresent()) {
+            return teamMissionData.get();
+        } else {
+            TeamMissionData missionData = new TeamMissionData(teamMission, missionIndex);
+            IridiumTowns.getInstance().getDatabaseManager().getTeamMissionDataTableManager().addEntry(missionData);
+            return missionData;
         }
     }
 
     @Override
     public void deleteTeamMission(TeamMission teamMission) {
         IridiumTowns.getInstance().getDatabaseManager().getTeamMissionTableManager().delete(teamMission);
+    }
+
+    @Override
+    public void deleteTeamMissionData(TeamMission teamMission) {
+        List<TeamMissionData> teamMissionDataList = IridiumTowns.getInstance().getDatabaseManager().getTeamMissionDataTableManager().getEntries().stream()
+                .filter(teamMissionData -> teamMissionData.getMissionID() == teamMission.getId())
+                .collect(Collectors.toList());
+        IridiumTowns.getInstance().getDatabaseManager().getTeamMissionDataTableManager().delete(teamMissionDataList);
     }
 
     public CompletableFuture<List<Chunk>> getTownChunks(TownRegion townRegion) {

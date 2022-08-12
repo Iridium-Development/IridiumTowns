@@ -9,20 +9,19 @@ import com.j256.ormlite.table.TableUtils;
 import lombok.Getter;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 public class TableManager<T, S> {
     private final SortedList<T> entries;
     private final Dao<T, S> dao;
+    private final Comparator<T> comparator;
 
     private final ConnectionSource connectionSource;
 
     public TableManager(ConnectionSource connectionSource, Class<T> clazz, Comparator<T> comparator) throws SQLException {
         this.connectionSource = connectionSource;
+        this.comparator = comparator;
         this.entries = new SortedList<>(comparator);
         TableUtils.createTableIfNotExists(connectionSource, clazz);
         this.dao = DaoManager.createDao(connectionSource, clazz);
@@ -48,6 +47,12 @@ public class TableManager<T, S> {
 
     public List<T> getEntries() {
         return entries;
+    }
+
+    public Optional<T> getEntry(T t) {
+        int index = Collections.binarySearch(getEntries(), t, comparator);
+        if (index < 0) return Optional.empty();
+        return Optional.of(getEntries().get(index));
     }
 
     public CompletableFuture<Void> delete(T t) {

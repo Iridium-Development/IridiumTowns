@@ -41,12 +41,6 @@ public class ForeignTownTableManager<T extends TeamData, S> extends TableManager
         townSortedList.add(t);
     }
 
-    public Optional<T> getEntry(T t) {
-        int index = Collections.binarySearch(getEntries(), t, comparator);
-        if (index < 0) return Optional.empty();
-        return Optional.of(getEntries().get(index));
-    }
-
     public List<T> getEntries(@NotNull Town town) {
         int index = Collections.binarySearch(townSortedList, new TeamData(town), Comparator.comparing(TeamData::getTeamID));
         if (index < 0) return Collections.emptyList();

@@ -10,6 +10,7 @@ import com.iridium.iridiumtowns.configs.SQL;
 import com.iridium.iridiumtowns.database.Town;
 import com.iridium.iridiumtowns.database.TownRegion;
 import com.iridium.iridiumtowns.managers.tablemanagers.ForeignTownTableManager;
+import com.iridium.iridiumtowns.managers.tablemanagers.TableManager;
 import com.iridium.iridiumtowns.managers.tablemanagers.TownTableManager;
 import com.iridium.iridiumtowns.managers.tablemanagers.UserTableManager;
 import com.j256.ormlite.field.DataPersisterManager;
@@ -44,6 +45,7 @@ public class DatabaseManager {
     private ForeignTownTableManager<TeamSpawners, Integer> teamSpawnerTableManager;
     private ForeignTownTableManager<TeamWarp, Integer> teamWarpTableManager;
     private ForeignTownTableManager<TeamMission, Integer> teamMissionTableManager;
+    private TableManager<TeamMissionData, Integer> teamMissionDataTableManager;
 
     public void init() throws SQLException {
         LoggerFactory.setLogBackendFactory(new NullLogBackend.NullLogBackendFactory());
@@ -73,7 +75,8 @@ public class DatabaseManager {
         this.teamBlockTableManager = new ForeignTownTableManager<>(connectionSource, TeamBlock.class, Comparator.comparing(TeamBlock::getTeamID).thenComparing(TeamBlock::getXMaterial));
         this.teamSpawnerTableManager = new ForeignTownTableManager<>(connectionSource, TeamSpawners.class, Comparator.comparing(TeamSpawners::getTeamID).thenComparing(TeamSpawners::getEntityType));
         this.teamWarpTableManager = new ForeignTownTableManager<>(connectionSource, TeamWarp.class, Comparator.comparing(TeamWarp::getTeamID).thenComparing(TeamWarp::getName));
-        this.teamMissionTableManager = new ForeignTownTableManager<>(connectionSource, TeamMission.class, Comparator.comparing(TeamMission::getTeamID).thenComparing(TeamMission::getMissionName).thenComparing(TeamMission::getMissionIndex));
+        this.teamMissionTableManager = new ForeignTownTableManager<>(connectionSource, TeamMission.class, Comparator.comparing(TeamMission::getTeamID).thenComparing(TeamMission::getMissionName));
+        this.teamMissionDataTableManager = new TableManager<>(connectionSource, TeamMissionData.class, Comparator.comparing(TeamMissionData::getMissionID).thenComparing(TeamMissionData::getMissionIndex));
     }
 
     /**
