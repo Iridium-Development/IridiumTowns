@@ -1,10 +1,7 @@
 package com.iridium.iridiumtowns.managers;
 
 import com.iridium.iridiumteams.database.*;
-import com.iridium.iridiumteams.database.types.InventoryType;
-import com.iridium.iridiumteams.database.types.LocalDateTimeType;
-import com.iridium.iridiumteams.database.types.LocationType;
-import com.iridium.iridiumteams.database.types.XMaterialType;
+import com.iridium.iridiumteams.database.types.*;
 import com.iridium.iridiumtowns.IridiumTowns;
 import com.iridium.iridiumtowns.configs.SQL;
 import com.iridium.iridiumtowns.database.Town;
@@ -46,6 +43,7 @@ public class DatabaseManager {
     private ForeignTownTableManager<TeamWarp, Integer> teamWarpTableManager;
     private ForeignTownTableManager<TeamMission, Integer> teamMissionTableManager;
     private TableManager<TeamMissionData, Integer> teamMissionDataTableManager;
+    private ForeignTownTableManager<TeamReward, Integer> teamRewardsTableManager;
 
     public void init() throws SQLException {
         LoggerFactory.setLogBackendFactory(new NullLogBackend.NullLogBackendFactory());
@@ -57,6 +55,7 @@ public class DatabaseManager {
         DataPersisterManager.registerDataPersisters(LocationType.getSingleton());
         DataPersisterManager.registerDataPersisters(InventoryType.getSingleton());
         DataPersisterManager.registerDataPersisters(LocalDateTimeType.getSingleton());
+        DataPersisterManager.registerDataPersisters(RewardType.getSingleton(IridiumTowns.getInstance()));
 
         this.connectionSource = new JdbcConnectionSource(
                 databaseURL,
@@ -77,6 +76,7 @@ public class DatabaseManager {
         this.teamWarpTableManager = new ForeignTownTableManager<>(connectionSource, TeamWarp.class, Comparator.comparing(TeamWarp::getTeamID).thenComparing(TeamWarp::getName));
         this.teamMissionTableManager = new ForeignTownTableManager<>(connectionSource, TeamMission.class, Comparator.comparing(TeamMission::getTeamID).thenComparing(TeamMission::getMissionName));
         this.teamMissionDataTableManager = new TableManager<>(connectionSource, TeamMissionData.class, Comparator.comparing(TeamMissionData::getMissionID).thenComparing(TeamMissionData::getMissionIndex));
+        this.teamRewardsTableManager = new ForeignTownTableManager<>(connectionSource, TeamReward.class, Comparator.comparing(TeamReward::getTeamID));
     }
 
     /**

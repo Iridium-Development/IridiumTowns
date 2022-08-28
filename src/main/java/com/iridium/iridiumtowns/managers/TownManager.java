@@ -298,6 +298,21 @@ public class TownManager extends TeamManager<Town, User> {
         IridiumTowns.getInstance().getDatabaseManager().getTeamMissionDataTableManager().delete(teamMissionDataList);
     }
 
+    @Override
+    public List<TeamReward> getTeamRewards(Town town) {
+        return IridiumTowns.getInstance().getDatabaseManager().getTeamRewardsTableManager().getEntries(town);
+    }
+
+    @Override
+    public void addTeamReward(TeamReward teamReward) {
+        IridiumTowns.getInstance().getDatabaseManager().getTeamRewardsTableManager().addEntry(teamReward);
+    }
+
+    @Override
+    public void deleteTeamReward(TeamReward teamReward) {
+        IridiumTowns.getInstance().getDatabaseManager().getTeamRewardsTableManager().delete(teamReward);
+    }
+
     public CompletableFuture<List<Chunk>> getTownChunks(TownRegion townRegion) {
         return CompletableFuture.supplyAsync(() -> {
             List<CompletableFuture<Chunk>> chunks = new ArrayList<>();

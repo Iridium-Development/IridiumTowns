@@ -149,6 +149,7 @@ public class IridiumTowns extends IridiumTeams<Town, User> {
         getDatabaseManager().getTeamBlockTableManager().save();
         getDatabaseManager().getTeamSpawnerTableManager().save();
         getDatabaseManager().getTeamMissionTableManager().save();
+        getDatabaseManager().getTeamRewardsTableManager().save();
     }
 
     public static IridiumTowns getInstance() {
