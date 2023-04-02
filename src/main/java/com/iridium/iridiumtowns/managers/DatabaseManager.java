@@ -34,6 +34,7 @@ public class DatabaseManager {
     private UserTableManager userTableManager;
     private TownTableManager townTableManager;
     private ForeignTownTableManager<TeamInvite, Integer> invitesTableManager;
+    private ForeignTownTableManager<TeamTrust, Integer> trustTableManager;
     private ForeignTownTableManager<TeamPermission, Integer> permissionsTableManager;
     private ForeignTownTableManager<TeamBank, Integer> bankTableManager;
     private ForeignTownTableManager<TownRegion, Integer> regionsTableManager;
@@ -44,6 +45,7 @@ public class DatabaseManager {
     private ForeignTownTableManager<TeamMission, Integer> teamMissionTableManager;
     private TableManager<TeamMissionData, Integer> teamMissionDataTableManager;
     private ForeignTownTableManager<TeamReward, Integer> teamRewardsTableManager;
+    private ForeignTownTableManager<TeamSetting, Integer> teamSettingsTableManager;
 
     public void init() throws SQLException {
         LoggerFactory.setLogBackendFactory(new NullLogBackend.NullLogBackendFactory());
@@ -67,6 +69,7 @@ public class DatabaseManager {
         this.userTableManager = new UserTableManager(connectionSource);
         this.townTableManager = new TownTableManager(connectionSource);
         this.invitesTableManager = new ForeignTownTableManager<>(connectionSource, TeamInvite.class, Comparator.comparing(TeamInvite::getTeamID).thenComparing(TeamInvite::getUser));
+        this.trustTableManager = new ForeignTownTableManager<>(connectionSource, TeamTrust.class, Comparator.comparing(TeamTrust::getTeamID).thenComparing(TeamTrust::getUser));
         this.permissionsTableManager = new ForeignTownTableManager<>(connectionSource, TeamPermission.class, Comparator.comparing(TeamPermission::getTeamID).thenComparing(TeamPermission::getPermission));
         this.regionsTableManager = new ForeignTownTableManager<>(connectionSource, TownRegion.class, Comparator.comparing(TownRegion::getTeamID));
         this.bankTableManager = new ForeignTownTableManager<>(connectionSource, TeamBank.class, Comparator.comparing(TeamBank::getTeamID).thenComparing(TeamBank::getBankItem));
@@ -77,6 +80,8 @@ public class DatabaseManager {
         this.teamMissionTableManager = new ForeignTownTableManager<>(connectionSource, TeamMission.class, Comparator.comparing(TeamMission::getTeamID).thenComparing(TeamMission::getMissionName));
         this.teamMissionDataTableManager = new TableManager<>(connectionSource, TeamMissionData.class, Comparator.comparing(TeamMissionData::getMissionID).thenComparing(TeamMissionData::getMissionIndex));
         this.teamRewardsTableManager = new ForeignTownTableManager<>(connectionSource, TeamReward.class, Comparator.comparing(TeamReward::getTeamID));
+        this.teamSettingsTableManager = new ForeignTownTableManager<>(connectionSource, TeamSetting.class, Comparator.comparing(TeamSetting::getTeamID).thenComparing(TeamSetting::getSetting));
+
     }
 
     /**

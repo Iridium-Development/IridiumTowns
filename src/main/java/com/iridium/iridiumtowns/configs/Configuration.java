@@ -16,6 +16,8 @@ public class Configuration extends com.iridium.iridiumteams.configs.Configuratio
             "&2&l[!] &2Left click to set Position 1",
             "&2&l[!] &2Right click to set Position 2"
     ));
+    public String townTitleTop = "&2%town_name%";
+    public String townTitleBottom = "&7%town_description%";
 
     public Configuration() {
         super("&2", "Town", "IridiumTowns");

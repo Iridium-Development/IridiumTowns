@@ -1,7 +1,10 @@
 package com.iridium.iridiumtowns.managers;
 
 import com.iridium.iridiumcore.dependencies.xseries.XMaterial;
+import com.iridium.iridiumcore.utils.Placeholder;
+import com.iridium.iridiumcore.utils.StringUtils;
 import com.iridium.iridiumteams.Rank;
+import com.iridium.iridiumteams.Setting;
 import com.iridium.iridiumteams.database.*;
 import com.iridium.iridiumteams.managers.TeamManager;
 import com.iridium.iridiumteams.missions.Mission;
@@ -60,15 +63,16 @@ public class TownManager extends TeamManager<Town, User> {
     }
 
     @Override
-    public List<Town> getTeams() {
-        return IridiumTowns.getInstance().getDatabaseManager().getTownTableManager().getEntries();
+    public void sendTeamTitle(Player player, Town town) {
+        List<Placeholder> placeholders = IridiumTowns.getInstance().getTeamsPlaceholderBuilder().getPlaceholders(town);
+        String top = StringUtils.processMultiplePlaceholders(IridiumTowns.getInstance().getConfiguration().townTitleTop, placeholders);
+        String bottom = StringUtils.processMultiplePlaceholders(IridiumTowns.getInstance().getConfiguration().townTitleBottom, placeholders);
+        IridiumTowns.getInstance().getNms().sendTitle(player, StringUtils.color(top), StringUtils.color(bottom), 20, 40, 20);
     }
 
     @Override
-    public List<User> getTeamMembers(Town team) {
-        return IridiumTowns.getInstance().getDatabaseManager().getUserTableManager().getEntries().stream()
-                .filter(user -> user.getTeamID() == team.getId())
-                .collect(Collectors.toList());
+    public List<Town> getTeams() {
+        return IridiumTowns.getInstance().getDatabaseManager().getTownTableManager().getEntries();
     }
 
     @Override
@@ -134,6 +138,26 @@ public class TownManager extends TeamManager<Town, User> {
     }
 
     @Override
+    public Optional<TeamTrust> getTeamTrust(Town town, User user) {
+        return IridiumTowns.getInstance().getDatabaseManager().getTrustTableManager().getEntry(new TeamTrust(town, user.getUuid(), user.getUuid()));
+    }
+
+    @Override
+    public List<TeamTrust> getTeamTrusts(Town town) {
+        return IridiumTowns.getInstance().getDatabaseManager().getTrustTableManager().getEntries(town);
+    }
+
+    @Override
+    public void createTeamTrust(Town town, User user, User invitee) {
+        IridiumTowns.getInstance().getDatabaseManager().getTrustTableManager().addEntry(new TeamTrust(town, user.getUuid(), invitee.getUuid()));
+    }
+
+    @Override
+    public void deleteTeamTrust(TeamTrust teamTrust) {
+        IridiumTowns.getInstance().getDatabaseManager().getTrustTableManager().delete(teamTrust);
+    }
+
+    @Override
     public synchronized TeamBank getTeamBank(Town town, String bankItem) {
         Optional<TeamBank> teamBank = IridiumTowns.getInstance().getDatabaseManager().getBankTableManager().getEntry(new TeamBank(town, bankItem, 0));
         if (teamBank.isPresent()) {
@@ -166,6 +190,20 @@ public class TownManager extends TeamManager<Town, User> {
             TeamBlock block = new TeamBlock(town, xMaterial, 0);
             IridiumTowns.getInstance().getDatabaseManager().getTeamBlockTableManager().addEntry(block);
             return block;
+        }
+    }
+
+    @Override
+    public TeamSetting getTeamSetting(Town town, String settingKey) {
+        Setting settingConfig = IridiumTowns.getInstance().getSettingsList().get(settingKey);
+        String defaultValue = settingConfig == null ? "" : settingConfig.getDefaultValue();
+        Optional<TeamSetting> teamSetting = IridiumTowns.getInstance().getDatabaseManager().getTeamSettingsTableManager().getEntry(new TeamSetting(town, settingKey, defaultValue));
+        if (teamSetting.isPresent()) {
+            return teamSetting.get();
+        } else {
+            TeamSetting setting = new TeamSetting(town, settingKey, defaultValue);
+            IridiumTowns.getInstance().getDatabaseManager().getTeamSettingsTableManager().addEntry(setting);
+            return setting;
         }
     }
 

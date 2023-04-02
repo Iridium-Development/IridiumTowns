@@ -4,11 +4,11 @@ import com.iridium.iridiumteams.IridiumTeams;
 import com.iridium.iridiumteams.configs.BankItems;
 import com.iridium.iridiumteams.configs.Missions;
 import com.iridium.iridiumteams.managers.MissionManager;
+import com.iridium.iridiumteams.managers.ShopManager;
 import com.iridium.iridiumtowns.configs.*;
 import com.iridium.iridiumtowns.database.Town;
 import com.iridium.iridiumtowns.database.User;
 import com.iridium.iridiumtowns.listeners.PlayerInteractListener;
-import com.iridium.iridiumtowns.listeners.PlayerMoveListener;
 import com.iridium.iridiumtowns.managers.CommandManager;
 import com.iridium.iridiumtowns.managers.DatabaseManager;
 import com.iridium.iridiumtowns.managers.TownManager;
@@ -42,6 +42,8 @@ public class IridiumTowns extends IridiumTeams<Town, User> {
     private Top top;
     private SQL sql;
     private Missions missions;
+    private Shop shop;
+    private Settings settings;
 
     private TownPlaceholderBuilder teamsPlaceholderBuilder;
     private UserPlaceholderBuilder userPlaceholderBuilder;
@@ -52,6 +54,7 @@ public class IridiumTowns extends IridiumTeams<Town, User> {
     private CommandManager commandManager;
     private DatabaseManager databaseManager;
     private MissionManager<Town, User> missionManager;
+    private ShopManager<Town, User> shopManager;
 
     private Economy economy;
 
@@ -102,7 +105,6 @@ public class IridiumTowns extends IridiumTeams<Town, User> {
     @Override
     public void registerListeners() {
         super.registerListeners();
-        Bukkit.getPluginManager().registerEvents(new PlayerMoveListener(), this);
         Bukkit.getPluginManager().registerEvents(new PlayerInteractListener(), this);
     }
 
@@ -119,6 +121,8 @@ public class IridiumTowns extends IridiumTeams<Town, User> {
         this.blockValues = getPersist().load(BlockValues.class);
         this.top = getPersist().load(Top.class);
         this.missions = getPersist().load(Missions.class);
+        this.shop = getPersist().load(Shop.class);
+        this.settings = getPersist().load(Settings.class);
         super.loadConfigs();
     }
 
@@ -136,6 +140,8 @@ public class IridiumTowns extends IridiumTeams<Town, User> {
         getPersist().save(blockValues);
         getPersist().save(top);
         getPersist().save(missions);
+        getPersist().save(shop);
+        getPersist().save(settings);
     }
 
     @Override

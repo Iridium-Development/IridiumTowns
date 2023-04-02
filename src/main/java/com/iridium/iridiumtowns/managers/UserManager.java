@@ -31,4 +31,9 @@ public class UserManager implements IridiumUserManager<Town, User> {
     public Optional<User> getUserByUUID(@NotNull UUID uuid) {
         return IridiumTowns.getInstance().getDatabaseManager().getUserTableManager().getUser(uuid);
     }
+
+    @Override
+    public List<User> getUsers() {
+        return IridiumTowns.getInstance().getDatabaseManager().getUserTableManager().getEntries();
+    }
 }
