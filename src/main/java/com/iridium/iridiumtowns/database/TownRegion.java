@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.bukkit.Location;
+import org.bukkit.util.BoundingBox;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
@@ -54,6 +55,11 @@ public class TownRegion extends TeamData {
         boolean isWithinY = position1.getY() <= y && position2.getY() >= y;
         boolean isWithinZ = position1.getZ() <= z && position2.getZ() >= z;
         return isWithinX && (isWithinY || IridiumTowns.getInstance().getConfiguration().ignoreYSpace) && isWithinZ;
+    }
+
+    public boolean isInRegion(Location position1, Location position2) {
+        BoundingBox boundingBox = BoundingBox.of(position1, position2);
+        return boundingBox.overlaps(BoundingBox.of(this.position1, this.position2));
     }
 
 }

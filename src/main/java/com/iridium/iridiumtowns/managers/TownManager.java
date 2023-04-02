@@ -18,6 +18,7 @@ import org.bukkit.block.BlockState;
 import org.bukkit.block.CreatureSpawner;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.util.BoundingBox;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.LocalDateTime;
@@ -29,6 +30,24 @@ public class TownManager extends TeamManager<Town, User> {
 
     public TownManager() {
         super(IridiumTowns.getInstance());
+    }
+
+    public boolean claimTownRegion(Town town, User user, Location position1, Location position2) {
+        if (IridiumTowns.getInstance().getConfiguration().ignoreYSpace) {
+            position1.setY(position1.getWorld().getMinHeight());
+            position2.setY(position2.getWorld().getMaxHeight());
+        }
+
+        if (getTownRegions().stream().anyMatch(townRegion -> townRegion.isInRegion(position1, position2))) {
+            user.getPlayer().sendMessage(StringUtils.color(IridiumTowns.getInstance().getMessages().claimOverlap
+                    .replace("%prefix%", IridiumTowns.getInstance().getConfiguration().prefix)
+            ));
+            return false;
+        }
+
+
+        IridiumTowns.getInstance().getDatabaseManager().getRegionsTableManager().addEntry(new TownRegion(town, position1, position2));
+        return true;
     }
 
     @Override
@@ -43,12 +62,16 @@ public class TownManager extends TeamManager<Town, User> {
 
     @Override
     public Optional<Town> getTeamViaLocation(Location location) {
-        return IridiumTowns.getInstance().getDatabaseManager().getRegionsTableManager().getEntries().stream()
+        return getTownRegions().stream()
                 .filter(townRegion -> townRegion.isInRegion(location))
                 .map(TownRegion::getTeamID)
                 .map(this::getTeamViaID)
                 .findFirst()
                 .orElse(Optional.empty());
+    }
+
+    public List<TownRegion> getTownRegions(){
+        return IridiumTowns.getInstance().getDatabaseManager().getRegionsTableManager().getEntries();
     }
 
     @Override

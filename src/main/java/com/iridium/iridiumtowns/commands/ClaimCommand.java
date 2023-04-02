@@ -53,12 +53,12 @@ public class ClaimCommand extends Command<Town, User> {
                 ));
                 return;
             }
-
-            IridiumTowns.getInstance().getDatabaseManager().getRegionsTableManager().addEntry(new TownRegion(team, position1.get(), position2.get()));
-            player.sendMessage(StringUtils.color(IridiumTowns.getInstance().getMessages().claimSet
-                    .replace("%prefix%", iridiumTeams.getConfiguration().prefix)
-            ));
-            player.setItemInHand(null);
+            if (IridiumTowns.getInstance().getTeamManager().claimTownRegion(team, user, position1.get(), position2.get())) {
+                user.getPlayer().sendMessage(StringUtils.color(IridiumTowns.getInstance().getMessages().claimSet
+                        .replace("%prefix%", IridiumTowns.getInstance().getConfiguration().prefix)
+                ));
+                player.setItemInHand(null);
+            }
         } else {
             player.sendMessage(StringUtils.color(syntax.replace("%prefix%", iridiumTeams.getConfiguration().prefix)));
         }
