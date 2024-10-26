@@ -1,7 +1,7 @@
 package com.iridium.iridiumtowns.configs;
 
 import com.iridium.iridiumcore.Item;
-import com.iridium.iridiumcore.dependencies.xseries.XMaterial;
+import com.cryptomorin.xseries.XMaterial;
 
 import java.util.Arrays;
 

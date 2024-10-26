@@ -1,6 +1,6 @@
 package com.iridium.iridiumtowns.managers;
 
-import com.iridium.iridiumcore.dependencies.xseries.XMaterial;
+import com.cryptomorin.xseries.XMaterial;
 import com.iridium.iridiumcore.utils.Placeholder;
 import com.iridium.iridiumcore.utils.StringUtils;
 import com.iridium.iridiumteams.Rank;
@@ -8,8 +8,10 @@ import com.iridium.iridiumteams.Setting;
 import com.iridium.iridiumteams.database.*;
 import com.iridium.iridiumteams.managers.TeamManager;
 import com.iridium.iridiumteams.missions.Mission;
+import com.iridium.iridiumteams.missions.MissionData;
 import com.iridium.iridiumteams.missions.MissionType;
 import com.iridium.iridiumtowns.IridiumTowns;
+import com.iridium.iridiumtowns.api.TownDeleteEvent;
 import com.iridium.iridiumtowns.database.Town;
 import com.iridium.iridiumtowns.database.TownRegion;
 import com.iridium.iridiumtowns.database.User;
@@ -18,7 +20,6 @@ import org.bukkit.block.BlockState;
 import org.bukkit.block.CreatureSpawner;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
-import org.bukkit.util.BoundingBox;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.LocalDateTime;
@@ -34,7 +35,12 @@ public class TownManager extends TeamManager<Town, User> {
 
     public boolean claimTownRegion(Town town, User user, Location position1, Location position2) {
         if (IridiumTowns.getInstance().getConfiguration().ignoreYSpace) {
-            position1.setY(position1.getWorld().getMinHeight());
+            try {
+                position1.setY(position1.getWorld().getMinHeight()); // not available in 1.13
+            } catch (NoSuchMethodError e) {
+                position1.setY(0);
+            }
+
             position2.setY(position2.getWorld().getMaxHeight());
         }
 
@@ -70,6 +76,24 @@ public class TownManager extends TeamManager<Town, User> {
                 .orElse(Optional.empty());
     }
 
+    @Override
+    public Optional<Town> getTeamViaLocation(Location location, Town town) {
+        return getTownRegions().stream()
+                .filter(townRegion -> townRegion.isInRegion(location))
+                .map(TownRegion::getTeamID)
+                .map(this::getTeamViaID)
+                .findFirst()
+                .orElse(Optional.empty());
+    }
+
+    @Override
+    public Optional<Town> getTeamViaLocation(Location location, Optional<Town> town) {
+        if(town.isPresent()){
+            return getTeamViaLocation(location, town.get());
+        }
+        return getTeamViaLocation(location);
+    }
+
     public List<TownRegion> getTownRegions(){
         return IridiumTowns.getInstance().getDatabaseManager().getRegionsTableManager().getEntries();
     }
@@ -99,6 +123,11 @@ public class TownManager extends TeamManager<Town, User> {
     }
 
     @Override
+    public boolean isInTeam(Town town, Location location) {
+        return false;
+    }
+
+    @Override
     public CompletableFuture<Town> createTeam(@NotNull Player owner, @NotNull String name) {
         return CompletableFuture.supplyAsync(() -> {
             User user = IridiumTowns.getInstance().getUserManager().getUser(owner);
@@ -117,8 +146,14 @@ public class TownManager extends TeamManager<Town, User> {
     }
 
     @Override
-    public void deleteTeam(Town town, User user) {
+    public boolean deleteTeam(Town town, User user) {
+        TownDeleteEvent townDeleteEvent = new TownDeleteEvent(town, user);
+        Bukkit.getPluginManager().callEvent(townDeleteEvent);
+        if (townDeleteEvent.isCancelled()) return false;
+
         IridiumTowns.getInstance().getDatabaseManager().getTownTableManager().delete(town);
+
+        return true;
     }
 
     @Override
@@ -335,7 +370,18 @@ public class TownManager extends TeamManager<Town, User> {
     }
 
     @Override
-    public TeamMissionData getTeamMissionData(TeamMission teamMission, int missionIndex) {
+    public List<TeamMissionData> getTeamMissionData(TeamMission teamMission) {
+        MissionData missionData = IridiumTowns.getInstance().getMissions().missions.get(teamMission.getMissionName()).getMissionData().get(teamMission.getMissionLevel());
+
+        List<TeamMissionData> list = new ArrayList<>();
+        for (int i = 0; i < missionData.getMissions().size(); i++) {
+            list.add(getTeamMissionData(teamMission, i));
+        }
+        return list;
+    }
+
+    @Override
+    public synchronized TeamMissionData getTeamMissionData(TeamMission teamMission, int missionIndex) {
         Optional<TeamMissionData> teamMissionData = IridiumTowns.getInstance().getDatabaseManager().getTeamMissionDataTableManager().getEntry(new TeamMissionData(teamMission, missionIndex));
         if (teamMissionData.isPresent()) {
             return teamMissionData.get();
@@ -351,7 +397,6 @@ public class TownManager extends TeamManager<Town, User> {
         IridiumTowns.getInstance().getDatabaseManager().getTeamMissionTableManager().delete(teamMission);
     }
 
-    @Override
     public void deleteTeamMissionData(TeamMission teamMission) {
         List<TeamMissionData> teamMissionDataList = IridiumTowns.getInstance().getDatabaseManager().getTeamMissionDataTableManager().getEntries().stream()
                 .filter(teamMissionData -> teamMissionData.getMissionID() == teamMission.getId())

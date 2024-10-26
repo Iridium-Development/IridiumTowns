@@ -5,6 +5,7 @@ import com.iridium.iridiumteams.configs.BankItems;
 import com.iridium.iridiumteams.configs.Missions;
 import com.iridium.iridiumteams.managers.MissionManager;
 import com.iridium.iridiumteams.managers.ShopManager;
+import com.iridium.iridiumteams.managers.SupportManager;
 import com.iridium.iridiumtowns.configs.*;
 import com.iridium.iridiumtowns.database.Town;
 import com.iridium.iridiumtowns.database.User;
@@ -55,6 +56,7 @@ public class IridiumTowns extends IridiumTeams<Town, User> {
     private DatabaseManager databaseManager;
     private MissionManager<Town, User> missionManager;
     private ShopManager<Town, User> shopManager;
+    private SupportManager<Town, User> supportManager;
 
     private Economy economy;
 
@@ -76,6 +78,10 @@ public class IridiumTowns extends IridiumTeams<Town, User> {
         this.commandManager = new CommandManager("iridiumtowns");
         this.databaseManager = new DatabaseManager();
         this.missionManager = new MissionManager<>(this);
+        this.supportManager = new SupportManager<>(this);
+
+        supportManager.registerSupport();
+
         try {
             databaseManager.init();
         } catch (SQLException exception) {

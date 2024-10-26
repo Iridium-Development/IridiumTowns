@@ -1,7 +1,7 @@
 package com.iridium.iridiumtowns.utils;
 
-import com.iridium.iridiumcore.dependencies.nbtapi.NBTCompound;
-import com.iridium.iridiumcore.dependencies.nbtapi.NBTItem;
+import de.tr7zw.changeme.nbtapi.NBTCompound;
+import de.tr7zw.changeme.nbtapi.NBTItem;
 import com.iridium.iridiumcore.utils.ItemStackUtils;
 import com.iridium.iridiumcore.utils.Placeholder;
 import com.iridium.iridiumcore.utils.StringUtils;

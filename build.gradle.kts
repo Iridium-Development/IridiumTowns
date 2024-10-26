@@ -1,11 +1,11 @@
 plugins {
     java
     `maven-publish`
-    id("com.github.johnrengelman.shadow") version "7.1.2"
+    id("io.github.goooler.shadow") version "8.1.8"
 }
 
 group = "com.iridium"
-version = "1.0.0"
+version = "1.0.1"
 description = "IridiumTowns"
 
 repositories {
@@ -13,6 +13,7 @@ repositories {
     maven("https://ci.ender.zone/plugin/repository/everything/")
     maven("https://nexus.iridiumdevelopment.net/repository/maven-releases/")
     maven("https://jitpack.io")
+    maven("https://repo.codemc.io/repository/maven-public/")
     mavenCentral()
 }
 
@@ -21,15 +22,18 @@ dependencies {
     implementation("org.jetbrains:annotations:24.0.1")
     implementation("com.j256.ormlite:ormlite-core:6.1")
     implementation("com.j256.ormlite:ormlite-jdbc:6.1")
-    implementation("com.iridium:IridiumTeams:2.0.0")
+    implementation("com.iridium:IridiumTeams:2.5.8")
+    implementation("com.github.cryptomorin:XSeries:11.3.0")
+    implementation("de.tr7zw:item-nbt-api:2.13.2")
 
     // Other dependencies that are not required or already available at runtime
     compileOnly("org.projectlombok:lombok:1.18.26")
-    compileOnly("org.spigotmc:spigot-api:1.19.1-R0.1-SNAPSHOT")
+    compileOnly("org.spigotmc:spigot-api:1.20.6-R0.1-SNAPSHOT")
     compileOnly("com.github.MilkBowl:VaultAPI:1.7")
 
     // Enable lombok annotation processing
-    annotationProcessor("org.projectlombok:lombok:1.18.26")
+    annotationProcessor("org.projectlombok:lombok:1.18.34")
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.18.0")
 
     // Test dependencies
     testImplementation(platform("org.junit:junit-bom:5.7.0"))
@@ -45,6 +49,9 @@ tasks {
     }
 
     shadowJar {
+
+        // Relocate NBT-API
+        relocate("de.tr7zw.changeme.nbtapi", "com.iridium.iridiumtowns.nbtapi")
 
         // Remove the archive classifier suffix
         archiveClassifier.set("")
@@ -80,13 +87,6 @@ tasks {
     compileTestJava {
         sourceCompatibility = JavaVersion.VERSION_17.toString()
         targetCompatibility = JavaVersion.VERSION_17.toString()
-    }
-}
-
-// Set the Java version and vendor
-java {
-    toolchain {
-        vendor.set(JvmVendorSpec.ADOPTOPENJDK)
     }
 }
 

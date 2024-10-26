@@ -1,6 +1,6 @@
 package com.iridium.iridiumtowns.placeholders;
 
-import com.iridium.iridiumcore.dependencies.xseries.XMaterial;
+import com.cryptomorin.xseries.XMaterial;
 import com.iridium.iridiumcore.utils.Placeholder;
 import com.iridium.iridiumteams.PlaceholderBuilder;
 import com.iridium.iridiumteams.Rank;
@@ -39,8 +39,8 @@ public class TownPlaceholderBuilder implements PlaceholderBuilder<Town> {
                 new Placeholder("town_value", String.valueOf(IridiumTowns.getInstance().getTeamManager().getTeamValue(town))),
                 new Placeholder("town_level", String.valueOf(town.getLevel())),
                 new Placeholder("town_experience", String.valueOf(town.getExperience())),
-                new Placeholder("town_value_rank", String.valueOf(IridiumTowns.getInstance().getTop().valueTeamSort.getRank(town, IridiumTowns.getInstance()))),
-                new Placeholder("town_experience_rank", String.valueOf(IridiumTowns.getInstance().getTop().experienceTeamSort.getRank(town, IridiumTowns.getInstance()))),
+                new Placeholder("town_value_rank", String.valueOf(IridiumTowns.getInstance().getTeamManager().getRank(town, IridiumTowns.getInstance().getTop().valueTeamSort))),
+                new Placeholder("town_experience_rank", String.valueOf(IridiumTowns.getInstance().getTeamManager().getRank(town, IridiumTowns.getInstance().getTop().valueTeamSort))),
                 new Placeholder("town_members_online", String.join(", ", onlineUsers)),
                 new Placeholder("town_members_online_count", String.valueOf(onlineUsers.size())),
                 new Placeholder("town_members_offline", String.join(", ", offlineUsers)),

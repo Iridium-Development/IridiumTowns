@@ -5,7 +5,6 @@ import com.iridium.iridiumteams.IridiumTeams;
 import com.iridium.iridiumteams.commands.Command;
 import com.iridium.iridiumtowns.IridiumTowns;
 import com.iridium.iridiumtowns.database.Town;
-import com.iridium.iridiumtowns.database.TownRegion;
 import com.iridium.iridiumtowns.database.User;
 import com.iridium.iridiumtowns.utils.ClaimWandUtils;
 import org.bukkit.Location;
@@ -20,11 +19,11 @@ import java.util.Optional;
 public class ClaimCommand extends Command<Town, User> {
 
     public ClaimCommand() {
-        super(Collections.singletonList("claim"), "Claim land for your Town", "/town claim (confirm)", "");
+        super(Collections.singletonList("claim"), "Claim land for your Town", "/town claim (confirm)", "", 0);
     }
 
     @Override
-    public void execute(User user, Town team, String[] args, IridiumTeams<Town, User> iridiumTeams) {
+    public boolean execute(User user, Town team, String[] args, IridiumTeams<Town, User> iridiumTeams) {
         Player player = user.getPlayer();
         if (args.length == 0) {
             player.getInventory().addItem(ClaimWandUtils.getClaimWand()).values().forEach(itemStack -> player.getLocation().getWorld().dropItem(player.getLocation(), itemStack));
@@ -37,7 +36,7 @@ public class ClaimCommand extends Command<Town, User> {
                 player.sendMessage(StringUtils.color(IridiumTowns.getInstance().getMessages().notHoldingClaimWand
                         .replace("%prefix%", iridiumTeams.getConfiguration().prefix)
                 ));
-                return;
+                return false;
             }
             Optional<Location> position1 = ClaimWandUtils.getPosition1(claimWand);
             Optional<Location> position2 = ClaimWandUtils.getPosition2(claimWand);
@@ -45,13 +44,13 @@ public class ClaimCommand extends Command<Town, User> {
                 player.sendMessage(StringUtils.color(IridiumTowns.getInstance().getMessages().position1NotSet
                         .replace("%prefix%", iridiumTeams.getConfiguration().prefix)
                 ));
-                return;
+                return false;
             }
             if (!position2.isPresent()) {
                 player.sendMessage(StringUtils.color(IridiumTowns.getInstance().getMessages().position2NotSet
                         .replace("%prefix%", iridiumTeams.getConfiguration().prefix)
                 ));
-                return;
+                return false;
             }
             if (IridiumTowns.getInstance().getTeamManager().claimTownRegion(team, user, position1.get(), position2.get())) {
                 user.getPlayer().sendMessage(StringUtils.color(IridiumTowns.getInstance().getMessages().claimSet
@@ -62,6 +61,7 @@ public class ClaimCommand extends Command<Town, User> {
         } else {
             player.sendMessage(StringUtils.color(syntax.replace("%prefix%", iridiumTeams.getConfiguration().prefix)));
         }
+        return true;
     }
 
     @Override

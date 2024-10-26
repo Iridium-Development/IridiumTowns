@@ -3,8 +3,8 @@ package com.iridium.iridiumtowns.configs;
 import com.google.common.collect.ImmutableMap;
 import com.iridium.iridiumcore.Background;
 import com.iridium.iridiumcore.Item;
-import com.iridium.iridiumcore.dependencies.fasterxml.annotation.JsonIgnore;
-import com.iridium.iridiumcore.dependencies.xseries.XMaterial;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.cryptomorin.xseries.XMaterial;
 import com.iridium.iridiumteams.configs.inventories.InventoryConfig;
 
 import java.util.Collections;
@@ -17,7 +17,7 @@ public class Inventories extends com.iridium.iridiumteams.configs.Inventories {
     public InventoryConfig townMenu = new InventoryConfig(45, "&7Town Menu", background1, ImmutableMap.<String, Item>builder()
             .put("t home", new Item(XMaterial.WHITE_BED, 13, 1, "&b&lTown Home", Collections.singletonList("&7Teleport to your town home")))
             .put("t boosters", new Item(XMaterial.EXPERIENCE_BOTTLE, 21, 1, "&b&lTown Boosters", Collections.singletonList("&7View your town boosters")))
-            .put("t members", new Item(XMaterial.PLAYER_HEAD, 22, 1, "&b&lTown Members", "Peaches_MLG", Collections.singletonList("&7View your town members")))
+            .put("t members", new Item(XMaterial.PLAYER_HEAD, 22, "Peaches_MLG", 1, "&b&lTown Members", Collections.singletonList("&7View your town members")))
             .put("t warps", new Item(XMaterial.END_PORTAL_FRAME, 23, 1, "&b&lTown Warps", Collections.singletonList("&7View your town warps")))
             .put("t upgrade", new Item(XMaterial.DIAMOND, 29, 1, "&b&lTown Upgrades", Collections.singletonList("&7View your town upgrades")))
             .put("t missions", new Item(XMaterial.IRON_SWORD, 30, 1, "&b&lTown Missions", Collections.singletonList("&7View your town missions")))

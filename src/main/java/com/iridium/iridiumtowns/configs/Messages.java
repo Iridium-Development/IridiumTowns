@@ -1,7 +1,5 @@
 package com.iridium.iridiumtowns.configs;
 
-import com.iridium.iridiumcore.dependencies.fasterxml.databind.deser.impl.BeanPropertyMap;
-
 public class Messages extends com.iridium.iridiumteams.configs.Messages {
 
     public String givenClaimWand = "%prefix% &7You have been given a claim wand.";
